@@ -20,7 +20,7 @@ from firebase_admin import db
 
 #Firebase setup
 # Fetch the service account key JSON file contents
-cred = credentials.Certificate('/Users/siddharthcherukupalli/Downloads/apex-pies.json')
+cred = credentials.Certificate('./apex-pies.json')
 
 # Initialize the app with a service account, granting admin privileges
 firebase_admin.initialize_app(cred, {
@@ -34,8 +34,6 @@ logging.basicConfig(level=logging.DEBUG)
 CORS(app)
 
 data = ""
-
-
 
 import os
 from prettyprinter import pprint
@@ -57,35 +55,93 @@ def createDict():
   return stocksDict
 
 
-stocksDict=createDict()
+stocksDict = createDict()
 
 stocks = []
-mainSector = "Tech"
-riskTolerance = 1.25
-
+betas = []
 
 def makePie(age, risk, sector):
   pieDict = []
 
+  # This is for the first stock
+  firstStock = chooseFirstStock(sector, risk)
+  firstStockBeta = stocksDict[sector][firstStock]
+  if (firstStockBeta > risk):
+    raiseBeta = False
+  else:
+    raiseBeta = True
+
+  pieDict.append({"Ticker" : firstStock , "Percentage" : 0.20, "Sector" : sector })
+  stocks.append(firstStock)
+
+
+  print(firstStockBeta)
+  print(raiseBeta)
+
+
+  # This is for the remainders stocks
   for x in range(4):
-    tickerName = chooseStock(sector)
+    if ((x + 1) % 2 == 1):
+          tickerName = chooseStock(sector, risk, raiseBeta)
+    else:
+      tickerName = chooseStock(sector, risk, not (raiseBeta))
+
+    stocks.append(tickerName)
     # if ticker was not already chosen 
     pieDict.append({"Ticker" : tickerName , "Percentage" : 0.20, "Sector" : sector })
   return pieDict
 
-def chooseStock(sector):
-  stockNumber = random.randint(1, 49)
+
+def findBetas(sector, stocks):
+  for ticker in stocks:
+    betas.append(stocksDict[sector][ticker])
+
+def findAvgBeta(betas):
+  return sum(betas) / len(betas)
+
+def chooseFirstStock(sector, targetBeta):
+  stockNumber = random.randint(1, 47)
   stocksList = list(stocksDict[sector].keys())
   tickerName = stocksList[stockNumber]
+  beta = stocksDict[sector][tickerName]
+
+  while (not ((beta >= targetBeta - 0.25) and (beta <= targetBeta + 0.25))):
+    tickerName = chooseFirstStock(sector, targetBeta)
+  
+  return tickerName
+
+def chooseStock(sector, targetBeta, raiseBeta):
+  stockNumber = random.randint(1, 47)
+  stocksList = list(stocksDict[sector].keys())
+  tickerName = stocksList[stockNumber]
+  beta = stocksDict[sector][tickerName]
+
+  if (raiseBeta):
+    if (beta > targetBeta):
+      return tickerName
+    else:
+      tickerName = chooseStock(sector, targetBeta, raiseBeta)
+  else:
+    if (beta < targetBeta):
+      return tickerName
+    else:
+      tickerName = chooseStock(sector, targetBeta, raiseBeta)
+
   return tickerName
 
 
 age = 19
-risk = 10
+risk = 1.25
 sector = 'Tech'
 pieDict = makePie(age, risk, sector)
 
-pprint(pieDict)
+# print(stocks)
+
+findBetas(sector, stocks)
+print(findAvgBeta(betas))
+
+
+# pprint(pieDict)
 
 # replace the child value with the userID
 ref = db.reference().child(str(random.randint(1, 100)))
