@@ -26,6 +26,7 @@
     "prettier": "^2.2.1"
   },
   "dependencies": {
+    "firebase": "^9.6.10",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-router-dom": "^5.2.0"
