@@ -27,16 +27,24 @@ firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://apex-pies-default-rtdb.firebaseio.com'
 })
 
-app = Flask(__name__)
-
-# logging.basicConfig(level=logging.DEBUG)
-
-CORS(app)
-
-data = ""
-
 import os
-from prettyprinter import pprint
+import pprint
+
+def publishPieToDB(age, risk, sector, userId):
+  stocksDict=createDict()
+  pieDict, stocks=makePie(age, risk, sector, stocksDict)
+  app.logger.error(pprint.pformat(pieDict))
+
+  betas = findBetas(sector, stocks, stocksDict)
+
+  # replace the child value with the userID
+  ref = db.reference().child(userId)
+
+  # replace the value for pie to the dictionary created
+  ref.set({
+    'pie': pieDict,
+    'avgBeta' : findAvgBeta(betas)
+  })
 
 def createDict():
   df = pd.read_csv(os.path.join(os.path.dirname(__file__), "./resources/stocks.csv"))
@@ -55,16 +63,12 @@ def createDict():
   return stocksDict
 
 
-stocksDict = createDict()
-
-stocks = []
-betas = []
-
-def makePie(age, risk, sector):
+def makePie(age, risk, sector, stocksDict):
   pieDict = []
+  stocks=[]
 
   # This is for the first stock
-  firstStock = chooseFirstStock(sector, risk)
+  firstStock = chooseFirstStock(sector, 1.25, stocksDict)
   firstStockBeta = stocksDict[sector][firstStock]
   if (firstStockBeta > risk):
     raiseBeta = False
@@ -77,25 +81,17 @@ def makePie(age, risk, sector):
   # This is for the remainders stocks
   for x in range(4):
     if ((x + 1) % 2 == 1):
-          tickerName = chooseStock(sector, risk, raiseBeta)
+          tickerName = chooseStock(sector, risk, raiseBeta, stocksDict)
     else:
-      tickerName = chooseStock(sector, risk, not (raiseBeta))
+      tickerName = chooseStock(sector, risk, not (raiseBeta), stocksDict)
 
     stocks.append(tickerName)
     # if ticker was not already chosen 
     pieDict.append({"Ticker" : tickerName , "Percentage" : 0.20, "Sector" : sector })
-  return pieDict
+  return pieDict, stocks
 
-
-def findBetas(sector, stocks):
-  for ticker in stocks:
-    betas.append(stocksDict[sector][ticker])
-
-def findAvgBeta(betas):
-  return sum(betas) / len(betas)
-
-def chooseFirstStock(sector, targetBeta):
-  stockNumber = random.randint(1, 47)
+def chooseFirstStock(sector, targetBeta, stocksDict):
+  # stockNumber = random.randint(1, 47)
   stocksList = list(stocksDict[sector].keys())
 
   closerBetaList = []
@@ -108,7 +104,7 @@ def chooseFirstStock(sector, targetBeta):
 
   return tickerName
 
-def chooseStock(sector, targetBeta, raiseBeta):
+def chooseStock(sector, targetBeta, raiseBeta, stocksDict):
   stockNumber = random.randint(1, 47)
   stocksList = list(stocksDict[sector].keys())
   tickerName = stocksList[stockNumber]
@@ -118,52 +114,59 @@ def chooseStock(sector, targetBeta, raiseBeta):
     if (beta > targetBeta):
       return tickerName
     else:
-      tickerName = chooseStock(sector, targetBeta, raiseBeta)
+      tickerName = chooseStock(sector, targetBeta, raiseBeta, stocksDict)
   else:
     if (beta < targetBeta):
       return tickerName
     else:
-      tickerName = chooseStock(sector, targetBeta, raiseBeta)
+      tickerName = chooseStock(sector, targetBeta, raiseBeta, stocksDict)
 
   return tickerName
 
-age = 19
-risk = 1.25
-sector = 'Tech'
-pieDict = makePie(age, risk, sector)
+def findBetas(sector, stocks, stocksDict):
+  betas=[]
+  for ticker in stocks:
+    betas.append(stocksDict[sector][ticker])
 
-pprint(pieDict)
+  return betas
 
-findBetas(sector, stocks)
+def findAvgBeta(betas):
+  return sum(betas) / len(betas)
 
 
-# replace the child value with the userID
-ref = db.reference().child(str(random.randint(1, 100)))
-
-# replace the value for pie to the dictionary created
-ref.set({
-    'pie': pieDict,
-    'avgBeta' : findAvgBeta(betas)
-})
+app = Flask(__name__)
+CORS(app)
 
 @app.route('/', methods = ['GET', 'POST'])
 def calculatePies():
   if request.method == 'POST':
     age = request.json['age']
-    risk = request.json['risk']
+    risk = int(request.json['risk'])
     sector = request.json['sector']
     userId = request.json['userId']
     app.logger.error("Age {age} Risk {risk} Sector {sector} UserId {userId}".format(age=age, risk=risk, sector=sector, userId=userId))
 
     # TODO: Pie Calculation Algorithm goes here!
-    pieDict = makePie(age, risk, sector)
+    publishPieToDB(age, risk, sector, userId)
 
-    return jsonify(pieDict)
+    return jsonify("POST Reply Message")
   elif request.method == 'GET':
     # Don't worry about this GET case. It's only here if we need it in the future.
 
     app.logger.info("GET message received")
     return jsonify("GET Reply Message")
+
+
+@app.route('/fetchpies', methods = ['POST'])
+def fetchPies():
+  userId = request.json['userId']
+  result = db.reference().child(userId)
+
+  app.logger.error(type(result.get()))
+  app.logger.error(pprint.pformat(result.get()))
+
+  return jsonify(result.get())
+  # return jsonify(result)
 
 
 app.run(debug=True)
