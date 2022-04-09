@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 const SECTORS = ["Tech", "Health", "Energy", "Banking"];
 
@@ -11,7 +11,7 @@ class UserForm extends Component {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10
       sector: "", // no sector selected at the beginning.
-      userId: -1 // filled in later and sent to PieResults page to fetch pies from BackEnd
+      userId: "DummyUser" // filled in later and sent to PieResults page to fetch pies from BackEnd
     };
   }
 
@@ -25,7 +25,20 @@ class UserForm extends Component {
         'Content-Type':'application/json'
       },
       body: JSON.stringify(this.state)
-    });
+    })
+
+    // fetch('http://localhost:5000/', {
+    //   method: 'GET',
+    //   headers : {
+    //     'Content-Type':'application/json'
+    //   }
+    // })
+
+    this.props.history.push({
+      pathname: '/pieresults',
+      state: this.state
+    })
+
   }
 
   render() {
@@ -110,10 +123,7 @@ class UserForm extends Component {
 
           </label>
           
-          {/* <Link to={`/pieresults/age=${this.state.age}/risk=${this.state.risk}/sector=${this.state.sector}`} state={this.state}> */}
-          <Link to={{pathname: `/pieresults`, state: this.state }}>
-            <button>Submit</button>
-          </Link>
+          <button>Submit</button>
         </form>
 
       </div>
@@ -122,5 +132,6 @@ class UserForm extends Component {
   }
 }
 
+const UserFormWithRouter = withRouter(UserForm);
 
-export default UserForm;
+export default UserFormWithRouter;
