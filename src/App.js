@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import apex_logo from "../resources/Apex_Logo_Final.png";
 import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
 import UserForm from "./UserForm";
+import PieResults from "./PieResults";
 
 class App extends Component {
   constructor() {
@@ -22,9 +23,9 @@ class App extends Component {
 
           {/* Determines which page to serve. */}
           <Switch>
-            {/* <Route path="/result/:age">
-              <Details />
-            </Route> */}
+            <Route path="/pieresults">
+              <PieResults />
+            </Route>
 
             <Route path="/">
               <UserForm />

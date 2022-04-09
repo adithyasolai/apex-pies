@@ -31,9 +31,7 @@ def calculatePies():
 
     # TODO: Pie Calculation Algorithm goes here!
 
-    #urjoshi was here 
-
-    return jsonify("POST Reply Message")
+    return jsonify({"message": "POST Reply Message"})
   elif request.method == 'GET':
     # Don't worry about this GET case. It's only here if we need it in the future.
 
