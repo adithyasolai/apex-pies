@@ -8,10 +8,24 @@ import numpy as np
 import logging
 import random
 
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+
 ####
 # `pip install flask` and `pip install flask_cors` before running this server.
 # Run `python app.py` to start the server. Don't use `flask run`!
 ####
+
+
+#Firebase setup
+# Fetch the service account key JSON file contents
+cred = credentials.Certificate('/Users/siddharthcherukupalli/Downloads/apex-pies.json')
+
+# Initialize the app with a service account, granting admin privileges
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://apex-pies-default-rtdb.firebaseio.com'
+})
 
 app = Flask(__name__)
 
@@ -51,17 +65,16 @@ riskTolerance = 1.25
 
 
 def makePie(age, risk, sector):
-  pieDict = {}
-  pieDict["pie"] = []
+  pieDict = []
 
   for x in range(4):
     tickerName = chooseStock(sector)
     # if ticker was not already chosen 
-    pieDict["pie"].append({"Ticker" : tickerName , "Percentage" : 0.20, "Sector" : sector })
+    pieDict.append({"Ticker" : tickerName , "Percentage" : 0.20, "Sector" : sector })
   return pieDict
 
 def chooseStock(sector):
-  stockNumber = random.randint(0,49)
+  stockNumber = random.randint(1, 49)
   stocksList = list(stocksDict[sector].keys())
   tickerName = stocksList[stockNumber]
   return tickerName
@@ -70,10 +83,17 @@ def chooseStock(sector):
 age = 19
 risk = 10
 sector = 'Tech'
-pieDict=makePie(age, risk, sector)
+pieDict = makePie(age, risk, sector)
 
 pprint(pieDict)
 
+# replace the child value with the userID
+ref = db.reference().child(str(random.randint(1, 100)))
+
+# replace the value for pie to the dictionary created
+ref.set({
+    'pie': pieDict
+})
 
 
 
