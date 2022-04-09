@@ -27,13 +27,6 @@ class UserForm extends Component {
       body: JSON.stringify(this.state)
     })
 
-    // fetch('http://localhost:5000/', {
-    //   method: 'GET',
-    //   headers : {
-    //     'Content-Type':'application/json'
-    //   }
-    // })
-
     this.props.history.push({
       pathname: '/pieresults',
       state: this.state

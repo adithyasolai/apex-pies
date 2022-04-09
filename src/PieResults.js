@@ -12,17 +12,17 @@ class PieResults extends Component {
   }
 
   async componentDidMount() {
-    const res = await fetch(
+    const response = await fetch(
       fetch('http://localhost:5000/fetchpies', {
       method: 'POST',
       headers : {
         'Content-Type':'application/json'
       },
-      body: JSON.stringify(this.state)
+      body: JSON.stringify({userId: this.props.location.state.userId})
     })
     );
 
-    console.log(res)
+    console.log(response)
 
     // only make loading false after getting the data from the API
     this.setState({loading: false});

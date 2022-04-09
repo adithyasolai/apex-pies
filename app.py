@@ -27,32 +27,8 @@ firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://apex-pies-default-rtdb.firebaseio.com'
 })
 
-app = Flask(__name__)
-
-# logging.basicConfig(level=logging.DEBUG)
-
-CORS(app)
-
-data = ""
-
 import os
-from prettyprinter import pprint
-
-def createDict():
-  df = pd.read_csv(os.path.join(os.path.dirname(__file__), "./resources/stocks.csv"))
-  stocksDict = {}
-  counter = 0
-  for x in df.index:
-    sector = df["Sector"][x]
-    ticker = df["Ticker"][x]
-    beta = df["Beta"][x]
-
-    if sector in stocksDict.keys(): #if the sector already is a key
-        stocksDict[sector][ticker] = beta
-    else:
-        stocksDict[sector] = {}
-
-  return stocksDict
+import pprint
 
 def publishPieToDB(age, risk, sector, userId):
   stocksDict=createDict()
@@ -70,13 +46,29 @@ def publishPieToDB(age, risk, sector, userId):
     'avgBeta' : findAvgBeta(betas)
   })
 
+def createDict():
+  df = pd.read_csv(os.path.join(os.path.dirname(__file__), "./resources/stocks.csv"))
+  stocksDict = {}
+  counter = 0
+  for x in df.index:
+    sector = df["Sector"][x]
+    ticker = df["Ticker"][x]
+    beta = df["Beta"][x]
+
+    if sector in stocksDict.keys(): #if the sector already is a key
+        stocksDict[sector][ticker] = beta
+    else:
+        stocksDict[sector] = {}
+
+  return stocksDict
+
 
 def makePie(age, risk, sector, stocksDict):
   pieDict = []
   stocks=[]
 
   # This is for the first stock
-  firstStock = chooseFirstStock(sector, risk, stocksDict)
+  firstStock = chooseFirstStock(sector, 1.25, stocksDict)
   firstStockBeta = stocksDict[sector][firstStock]
   if (firstStockBeta > risk):
     raiseBeta = False
@@ -98,25 +90,15 @@ def makePie(age, risk, sector, stocksDict):
     pieDict.append({"Ticker" : tickerName , "Percentage" : 0.20, "Sector" : sector })
   return pieDict, stocks
 
-
-def findBetas(sector, stocks, stocksDict):
-  betas=[]
-  for ticker in stocks:
-    betas.append(stocksDict[sector][ticker])
-
-  return betas
-
-def findAvgBeta(betas):
-  return sum(betas) / len(betas)
-
 def chooseFirstStock(sector, targetBeta, stocksDict):
-  stockNumber = random.randint(1, 47)
+  # stockNumber = random.randint(1, 47)
   stocksList = list(stocksDict[sector].keys())
-  tickerName = stocksList[stockNumber]
-  beta = stocksDict[sector][tickerName]
+  tickerName = stocksList[0]
 
-  while (not ((beta >= targetBeta - 0.25) and (beta <= targetBeta + 0.25))):
-    tickerName = chooseFirstStock(sector, targetBeta, stocksDict)
+  # beta = stocksDict[sector][tickerName]
+
+  # while (not ((beta >= targetBeta - 0.25) and (beta <= targetBeta + 0.25))):
+  #   tickerName = chooseFirstStock(sector, targetBeta, stocksDict)
   
   return tickerName
 
@@ -139,12 +121,25 @@ def chooseStock(sector, targetBeta, raiseBeta, stocksDict):
 
   return tickerName
 
+def findBetas(sector, stocks, stocksDict):
+  betas=[]
+  for ticker in stocks:
+    betas.append(stocksDict[sector][ticker])
+
+  return betas
+
+def findAvgBeta(betas):
+  return sum(betas) / len(betas)
+
+
+app = Flask(__name__)
+CORS(app)
 
 @app.route('/', methods = ['GET', 'POST'])
 def calculatePies():
   if request.method == 'POST':
     age = request.json['age']
-    risk = request.json['risk']
+    risk = int(request.json['risk'])
     sector = request.json['sector']
     userId = request.json['userId']
     app.logger.error("Age {age} Risk {risk} Sector {sector} UserId {userId}".format(age=age, risk=risk, sector=sector, userId=userId))
@@ -152,7 +147,7 @@ def calculatePies():
     # TODO: Pie Calculation Algorithm goes here!
     publishPieToDB(age, risk, sector, userId)
 
-    return jsonify(pieDict)
+    return jsonify("POST Reply Message")
   elif request.method == 'GET':
     # Don't worry about this GET case. It's only here if we need it in the future.
 
@@ -161,8 +156,15 @@ def calculatePies():
 
 
 @app.route('/fetchpies', methods = ['POST'])
-def calculatePies():
-  return jsonify({})
+def fetchPies():
+  userId = request.json['userId']
+  result = db.reference().child(userId)
+
+  app.logger.error(type(result.get()))
+  app.logger.error(pprint.pformat(result.get()))
+
+  return jsonify(result.get())
+  # return jsonify(result)
 
 
 app.run(debug=True)
