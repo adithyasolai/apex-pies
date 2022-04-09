@@ -35,8 +35,6 @@ CORS(app)
 
 data = ""
 
-
-
 import os
 from prettyprinter import pprint
 
@@ -56,12 +54,20 @@ def createDict():
 
   return stocksDict
 
+def publishPieToDB(age, risk, sector, userId):
+  stocksDict=createDict()
+  pieDict=makePie(age, risk, sector)
+  app.logger.error(pprint.pformat(pieDict))
 
-stocksDict=createDict()
+  # replace the child value with the userID
+  ref = db.reference().child(userId)
 
-stocks = []
-mainSector = "Tech"
-riskTolerance = 1.25
+  # replace the value for pie to the dictionary created
+  ref.set({
+      'pie': pieDict
+  })
+
+
 
 
 def makePie(age, risk, sector):
@@ -80,20 +86,6 @@ def chooseStock(sector):
   return tickerName
 
 
-age = 19
-risk = 10
-sector = 'Tech'
-pieDict = makePie(age, risk, sector)
-
-pprint(pieDict)
-
-# replace the child value with the userID
-ref = db.reference().child(str(random.randint(1, 100)))
-
-# replace the value for pie to the dictionary created
-ref.set({
-    'pie': pieDict
-})
 
 @app.route('/', methods = ['GET', 'POST'])
 def calculatePies():
@@ -105,7 +97,7 @@ def calculatePies():
     app.logger.error("Age {age} Risk {risk} Sector {sector} UserId {userId}".format(age=age, risk=risk, sector=sector, userId=userId))
 
     # TODO: Pie Calculation Algorithm goes here!
-    pieDict = makePie(age, risk, sector)
+    publishPieToDB(age, risk, sector, userId)
 
     return jsonify(pieDict)
   elif request.method == 'GET':
@@ -113,6 +105,11 @@ def calculatePies():
 
     app.logger.info("GET message received")
     return jsonify("GET Reply Message")
+
+
+@app.route('/fetchpies', methods = ['POST'])
+def calculatePies():
+  return jsonify({})
 
 
 app.run(debug=True)
