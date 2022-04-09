@@ -97,12 +97,15 @@ def findAvgBeta(betas):
 def chooseFirstStock(sector, targetBeta):
   stockNumber = random.randint(1, 47)
   stocksList = list(stocksDict[sector].keys())
-  tickerName = stocksList[stockNumber]
-  beta = stocksDict[sector][tickerName]
 
-  while (not ((beta >= targetBeta - 0.25) and (beta <= targetBeta + 0.25))):
-    tickerName = chooseFirstStock(sector, targetBeta)
+  closerBetaList = []
+  for ticker in stocksList:
+    beta = stocksDict[sector][ticker]
+    if (beta >= (targetBeta - 0.2) and (beta <= targetBeta + 0.2)):
+      closerBetaList.append(ticker)
   
+  tickerName = closerBetaList[random.randint(1, len(closerBetaList) - 1)]
+
   return tickerName
 
 def chooseStock(sector, targetBeta, raiseBeta):
