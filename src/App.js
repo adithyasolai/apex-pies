@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { StrictMode } from "react";
 import apex_logo from "../resources/Apex_Logo_Final.png";
 import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
+import UserForm from "./UserForm";
 
 class App extends Component {
   constructor() {
@@ -20,20 +21,19 @@ class App extends Component {
           </header>
 
           {/* Determines which page to serve. */}
-          {/* <Switch>
-            <Route path="/result/:age">
+          <Switch>
+            {/* <Route path="/result/:age">
               <Details />
-            </Route>
+            </Route> */}
 
             <Route path="/">
-              <SearchParams />
+              <UserForm />
             </Route>
-          </Switch> */}
+          </Switch>
         </Router>
 
       </div>
     )
-    
   }
 }
 
