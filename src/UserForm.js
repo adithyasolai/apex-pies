@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { Link } from "react-router-dom";
 
 const SECTORS = ["Tech", "Health", "Energy", "Banking"];
 
@@ -9,7 +10,8 @@ class UserForm extends Component {
     this.state = {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10
-      sector: "" // no sector selected at the beginning.
+      sector: "", // no sector selected at the beginning.
+      userId: -1 // filled in later and sent to PieResults page to fetch pies from BackEnd
     };
   }
 
@@ -23,14 +25,7 @@ class UserForm extends Component {
         'Content-Type':'application/json'
       },
       body: JSON.stringify(this.state)
-    }).then(response => { console.log(response.json()) });
-
-    fetch('http://localhost:5000/',{
-      method: 'GET',
-      headers : {
-        'Content-Type':'application/json'
-      }
-    }).then(response => { console.log(response.json()) });
+    });
   }
 
   render() {
@@ -114,8 +109,11 @@ class UserForm extends Component {
             </select>
 
           </label>
-
-          <button>Submit</button>
+          
+          {/* <Link to={`/pieresults/age=${this.state.age}/risk=${this.state.risk}/sector=${this.state.sector}`} state={this.state}> */}
+          <Link to={{pathname: `/pieresults`, state: this.state }}>
+            <button>Submit</button>
+          </Link>
         </form>
 
       </div>
@@ -123,5 +121,6 @@ class UserForm extends Component {
    
   }
 }
+
 
 export default UserForm;
