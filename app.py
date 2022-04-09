@@ -74,11 +74,6 @@ def makePie(age, risk, sector):
   pieDict.append({"Ticker" : firstStock , "Percentage" : 0.20, "Sector" : sector })
   stocks.append(firstStock)
 
-
-  print(firstStockBeta)
-  print(raiseBeta)
-
-
   # This is for the remainders stocks
   for x in range(4):
     if ((x + 1) % 2 == 1):
@@ -129,26 +124,23 @@ def chooseStock(sector, targetBeta, raiseBeta):
 
   return tickerName
 
-
 age = 19
 risk = 1.25
 sector = 'Tech'
 pieDict = makePie(age, risk, sector)
 
-# print(stocks)
+pprint(pieDict)
 
 findBetas(sector, stocks)
-print(findAvgBeta(betas))
 
-
-# pprint(pieDict)
 
 # replace the child value with the userID
 ref = db.reference().child(str(random.randint(1, 100)))
 
 # replace the value for pie to the dictionary created
 ref.set({
-    'pie': pieDict
+    'pie': pieDict,
+    'avgBeta' : findAvgBeta(betas)
 })
 
 @app.route('/', methods = ['GET', 'POST'])
