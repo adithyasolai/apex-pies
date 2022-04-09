@@ -10,7 +10,7 @@ class PieResults extends Component {
   }
 
   render() {
-    console.log(this.props);
+    // console.log(this.props);
     const age = this.props.location.state.age;
     const risk = this.props.location.state.risk;
     const sector = this.props.location.state.sector;
