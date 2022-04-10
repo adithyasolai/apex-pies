@@ -30,7 +30,7 @@ class PieResults extends Component {
         Object.assign(
           {
             loading: false,
-            avgBeta: json.avgBeta,
+            avgBeta: (Math.round(json.avgBeta * 100) / 100).toFixed(2) ,
             pie: json.pie
           }
         )
@@ -64,6 +64,7 @@ class PieResults extends Component {
           Age: {age} -- Risk: {risk} -- Sector: {sector} -- User ID: {userId}
         </h1>
 
+        <p> Overall Beta of Pie: {this.state.avgBeta} </p>
 
         {
 
