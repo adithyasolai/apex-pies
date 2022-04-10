@@ -90,8 +90,54 @@ h4 {
   border-radius: 4px;
   font-weight: normal;
   transition: all 0.2s ease-in-out;
+  border-radius: 20px;
 }
 .glow-button:hover {
   color: rgba(255, 255, 255, 1);
   box-shadow: 0 5px 15px rgba(12, 130, 220, 0.783);
+}
+.button_image {
+  color: white;
+  background-Color: white;
+  border-radius: 90px;
+}
+
+
+.hovertext_image {
+  position: relative;
+  border-bottom: 1px dotted black;
+}
+
+.hovertext_image:before {
+  content: attr(data-hover);
+  visibility: hidden;
+  opacity: .9;
+  width: 150px;
+  background-color: #374158ff;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  border-radius: 20px;
+  padding: 10px 0;
+  transition: opacity 1s ease-in-out;
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 110%;
+}
+
+.hovertext_image:hover:before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.slider {
+  position: relative;
+  width: 350px;
+
+}
+
+.sector_images{
+  width: 60px;
+  padding: 30px;
 }
