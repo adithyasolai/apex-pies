@@ -7,11 +7,12 @@ class UserForm extends Component {
   constructor() {
     super();
 
+    var userID = "DummyUser" + parseInt(Math.random() * 1000);
     this.state = {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10
       sector: "", // no sector selected at the beginning.
-      userId: "DummyUser868", // filled in later and sent to PieResults page to fetch pies from BackEnd
+      userId: userID // filled in later and sent to PieResults page to fetch pies from BackEnd
     };
   }
 
