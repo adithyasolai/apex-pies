@@ -11,7 +11,7 @@ class UserForm extends Component {
     this.state = {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10
-      sector: "", // no sector selected at the beginning.
+      sector: "Tech", // no sector selected at the beginning.
       userId: userID // filled in later and sent to PieResults page to fetch pies from BackEnd
     };
   }
