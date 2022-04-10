@@ -1,12 +1,14 @@
 import { Component } from "react";
 import { withRouter } from "react-router-dom";
 
-// import banking_logo from "../resources/sector_icons/banking-sector.png";
-// import energy_logo from "../resources/sector_icons/energy-sector.png";
-// import health_logo from "../resources/sector_icons/health-sector.png";
-// import tech_logo from "../resources/sector_icons/tech-sector.png";
+import banking_logo from "../resources/sector_icons/banking-sector.jpeg";
+import energy_logo from "../resources/sector_icons/energy-sector.png";
+import health_logo from "../resources/sector_icons/health-sector.png";
+import tech_logo from "../resources/sector_icons/tech-sector.jpeg";
 
 const SECTORS = ["Tech", "Health", "Energy", "Banking"];
+const SECTOR_IMAGES = [tech_logo, health_logo, energy_logo, banking_logo]
+const NUM_SECTORS=SECTORS.length;
 
 class UserForm extends Component {
   constructor() {
@@ -17,8 +19,24 @@ class UserForm extends Component {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10
       sector: "Tech", // no sector selected at the beginning.
-      userId: userID // filled in later and sent to PieResults page to fetch pies from BackEnd
+      userId: userID, // filled in later and sent to PieResults page to fetch pies from BackEnd
+      activeSectorImageIndex: 0
     };
+  }
+
+  handleSectorClick(event) {
+    const sectorIndex = +event.target.dataset.index;
+    this.setState(
+    {
+      // make our `active` state field the same as the index of the image that was clicked to change what the main picture is in render()
+      // this is just HTML stuff
+      // event.target is the <img> tag that was clicked.
+      // dataset is anything put into <data-?> tags.
+      // the + sign coerces the value to be a number
+      activeSectorImageIndex: +event.target.dataset.index,
+      sector: SECTORS[sectorIndex]
+    }
+    );
   }
 
     handleSubmit(event) {
@@ -109,6 +127,25 @@ class UserForm extends Component {
               </select>
 
             </label>
+
+            <div>
+              {Array.from(Array(NUM_SECTORS), (x, i) => i).map((i) =>
+              {
+                return (
+                // the below should be a button, and not an image. (so that screen-readers can read it, and it will be more accesible.)
+                // eslint-disable-next-line
+                <img
+                  key={SECTOR_IMAGES[i]}
+                  src={SECTOR_IMAGES[i]}
+                  data-index={i}
+                  onClick={this.handleSectorClick.bind(this)} // bind gives the click handler function context about what `this` is to access the state.
+                  alt="asdf"
+                />
+                )
+              }
+              )
+              }
+            </div>
            
 
             <br/>
