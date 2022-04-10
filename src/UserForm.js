@@ -2,12 +2,13 @@ import { Component } from "react";
 import { withRouter } from "react-router-dom";
 
 import banking_logo from "../resources/sector_icons/banking-sector.jpeg";
-import energy_logo from "../resources/sector_icons/energy-sector.png";
-import health_logo from "../resources/sector_icons/health-sector.png";
+import energy_logo from "../resources/sector_icons/energy-sector.jpeg";
+import health_logo from "../resources/sector_icons/health-sector.jpeg";
 import tech_logo from "../resources/sector_icons/tech-sector.jpeg";
 
 const SECTORS = ["Tech", "Health", "Energy", "Banking"];
 const SECTOR_IMAGES = [tech_logo, health_logo, energy_logo, banking_logo]
+const SECTOR_HOVER_TEXT = ["Tech", "Health", "Energy", "Banking"]
 const NUM_SECTORS=SECTORS.length;
 
 class UserForm extends Component {
@@ -134,13 +135,16 @@ class UserForm extends Component {
                 return (
                 // the below should be a button, and not an image. (so that screen-readers can read it, and it will be more accesible.)
                 // eslint-disable-next-line
-                <img
+                <span className="hovertext_image" data-hover={SECTOR_HOVER_TEXT[i]}>
+                <button class = "button_image"><img
+                  className = "sector_images"
                   key={SECTOR_IMAGES[i]}
                   src={SECTOR_IMAGES[i]}
                   data-index={i}
                   onClick={this.handleSectorClick.bind(this)} // bind gives the click handler function context about what `this` is to access the state.
                   alt="asdf"
-                />
+    
+                /></button></span>
                 )
               }
               )
