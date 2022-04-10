@@ -1,19 +1,20 @@
-  import { Component } from "react";
-  import { withRouter } from "react-router-dom";
+import { Component } from "react";
+import { withRouter } from "react-router-dom";
 
-  const SECTORS = ["Tech", "Health", "Energy", "Banking"];
+const SECTORS = ["Tech", "Health", "Energy", "Banking"];
 
-  class UserForm extends Component {
-    constructor() {
-      super();
+class UserForm extends Component {
+  constructor() {
+    super();
 
-      this.state = {
-        age: 18, // lowest possible age to invest is 18
-        risk: 1, // ranges from 1-10
-        sector: "", // no sector selected at the beginning.
-        userId: "DummyUser" // filled in later and sent to PieResults page to fetch pies from BackEnd
-      };
-    }
+    var userID = "DummyUser" + parseInt(Math.random() * 1000);
+    this.state = {
+      age: 18, // lowest possible age to invest is 18
+      risk: 1, // ranges from 1-10
+      sector: "Tech", // no sector selected at the beginning.
+      userId: userID // filled in later and sent to PieResults page to fetch pies from BackEnd
+    };
+  }
 
     handleSubmit(event) {
       event.preventDefault();
@@ -155,7 +156,8 @@
     
     }
   }
+}
 
-  const UserFormWithRouter = withRouter(UserForm);
+const UserFormWithRouter = withRouter(UserForm);
 
-  export default UserFormWithRouter;
+export default UserFormWithRouter;
