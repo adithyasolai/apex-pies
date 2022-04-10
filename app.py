@@ -93,13 +93,15 @@ def makePie(age, risk, sector, stocksDict):
 def chooseFirstStock(sector, targetBeta, stocksDict):
   # stockNumber = random.randint(1, 47)
   stocksList = list(stocksDict[sector].keys())
-  tickerName = stocksList[0]
 
-  # beta = stocksDict[sector][tickerName]
-
-  # while (not ((beta >= targetBeta - 0.25) and (beta <= targetBeta + 0.25))):
-  #   tickerName = chooseFirstStock(sector, targetBeta, stocksDict)
+  closerBetaList = []
+  for ticker in stocksList:
+    beta = stocksDict[sector][ticker]
+    if (beta >= (targetBeta - 0.2) and (beta <= targetBeta + 0.2)):
+      closerBetaList.append(ticker)
   
+  tickerName = closerBetaList[random.randint(1, len(closerBetaList) - 1)]
+
   return tickerName
 
 def chooseStock(sector, targetBeta, raiseBeta, stocksDict):
