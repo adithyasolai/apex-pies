@@ -1,6 +1,5 @@
 import { Component } from "react";
 import { withRouter } from "react-router-dom";
-import Embedly from 'react-embedly';
 
 class PieResults extends Component {
   constructor() {
@@ -31,7 +30,7 @@ class PieResults extends Component {
         Object.assign(
           {
             loading: false,
-            avgBeta: json.avgBeta,
+            avgBeta: (Math.round(json.avgBeta * 100) / 100).toFixed(2),
             pie: json.pie,
             vizLink: json.vizLink,
             username: json.username,
@@ -70,6 +69,7 @@ class PieResults extends Component {
         </h1>
 
         <div dangerouslySetInnerHTML={{__html: this.state.iframe}} />
+        <p> Overall Beta of Pie: {this.state.avgBeta} </p>
 
         {
 
@@ -91,14 +91,6 @@ class PieResults extends Component {
         }
 
         <br/>
-
-
-        <div class="my-pie-chart"></div>
-        <div class="my-pie-chart-cont">
-
-          <h1>Breakdown</h1>
-          <strong></strong>
-        </div>
 
 
          

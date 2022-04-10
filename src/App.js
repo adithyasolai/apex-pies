@@ -5,6 +5,7 @@ import apex_logo from "../resources/Apex_Logo_Final.png";
 import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
 import UserForm from "./UserForm";
 import PieResults from "./PieResults";
+import ResourcesFaq from "./ResourcesFaq";
 
 class App extends Component {
   constructor() {
@@ -25,6 +26,10 @@ class App extends Component {
           <Switch>
             <Route path="/pieresults">
               <PieResults />
+            </Route>
+
+            <Route path="/resourcesfaq">
+              <ResourcesFaq />
             </Route>
 
             <Route path="/">
