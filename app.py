@@ -188,7 +188,7 @@ def calculatePies():
     risk = int(request.json['risk'])
     sector = request.json['sector']
     userId = request.json['userId']
-    app.logger.error("Age {age} Risk {risk} Sector {sector} UserId {userId}".format(age=age, risk=risk, sector=sector, userId=userId))
+    #app.logger.error("Age {age} Risk {risk} Sector {sector} UserId {userId}".format(age=age, risk=risk, sector=sector, userId=userId))
 
     # TODO: Pie Calculation Algorithm goes here!
     publishPieToDB(age, risk, sector, userId)

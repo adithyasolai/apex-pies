@@ -17,7 +17,7 @@ class App extends Component {
         <Router>
           <header>
             <Link to="/">
-              <img src={apex_logo} alt="asdf"/>
+              <img src={apex_logo} alt="asdf" />
             </Link>
           </header>
 
@@ -32,9 +32,8 @@ class App extends Component {
             </Route>
           </Switch>
         </Router>
-
       </div>
-    )
+    );
   }
 }
 
