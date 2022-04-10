@@ -174,7 +174,8 @@ def findBetas(sector, stocks, stocksDict):
   return betas
 
 def findAvgBeta(betas):
-  return sum(betas) / Double(len(betas))
+  
+  return sum(betas) / len(betas)
 
 
 app = Flask(__name__)
