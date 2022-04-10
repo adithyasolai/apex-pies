@@ -139,7 +139,7 @@ class UserForm extends Component {
                 // the below should be a button, and not an image. (so that screen-readers can read it, and it will be more accesible.)
                 // eslint-disable-next-line
                 <span className="hovertext_image" data-hover={SECTOR_HOVER_TEXT[i]}>
-                <button className = "button_image"><img
+                <img
                   className = "sector_images"
                   key={SECTOR_IMAGES[i]}
                   src={SECTOR_IMAGES[i]}
@@ -147,7 +147,7 @@ class UserForm extends Component {
                   onClick={this.handleSectorClick.bind(this)} // bind gives the click handler function context about what `this` is to access the state.
                   alt="asdf"
     
-                /></button></span>
+                /></span>
                 )
               }
               )
