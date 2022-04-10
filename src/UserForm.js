@@ -12,7 +12,7 @@ class UserForm extends Component {
   constructor() {
     super();
 
-    var userID = "DummyUser" + parseInt(Math.random() * 1000);
+    var userID = "DummyUser123";
     this.state = {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10

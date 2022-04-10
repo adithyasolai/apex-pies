@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { withRouter } from "react-router-dom";
+import Embedly from 'react-embedly';
 
 class PieResults extends Component {
   constructor() {
@@ -31,7 +32,11 @@ class PieResults extends Component {
           {
             loading: false,
             avgBeta: json.avgBeta,
-            pie: json.pie
+            pie: json.pie,
+            vizLink: json.vizLink,
+            username: json.username,
+            apiKey: json.apiKey,
+            iframe: json.iframe
           }
         )
       );
@@ -64,6 +69,7 @@ class PieResults extends Component {
           Age: {age} -- Risk: {risk} -- Sector: {sector} -- User ID: {userId}
         </h1>
 
+        <div dangerouslySetInnerHTML={{__html: this.state.iframe}} />
 
         {
 
@@ -85,10 +91,22 @@ class PieResults extends Component {
         }
 
         <br/>
-      </div>
+
+
+        <div class="my-pie-chart"></div>
+        <div class="my-pie-chart-cont">
+
+          <h1>Breakdown</h1>
+          <strong></strong>
+        </div>
+
+
+         
+
+       </div>
     );
   }
-}
+} 
 
 const PieResultsWithRouter = withRouter(PieResults);
 
