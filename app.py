@@ -108,36 +108,25 @@ def makePie(age, userRisk, sector, stocksDict):
     
     tempStocksList = []
     for x in range(length):
-      if ((x + 1) % 2 == 1):
+      if (length == 3):
+        if ((x + 1) % 2 == 1):
             tickerName = chooseStock(sec, weightedRisk, raiseBeta, stocksDict)
       else:
-        tickerName = chooseStock(sec, weightedRisk, not (raiseBeta), stocksDict)
+        if ((x + 1) % 2 == 1):
+              tickerName = chooseStock(sec, weightedRisk, raiseBeta, stocksDict)
+        else:
+          tickerName = chooseStock(sec, weightedRisk, not (raiseBeta), stocksDict)
 
       stocks.append(tickerName)
       tempStocksList.append(tickerName)
       # if ticker was not already chosen 
-      pieDict.append({"Ticker" : tickerName , "Percentage" : 0.05, "Sector" : sector })
+      pieDict.append({"Ticker" : tickerName , "Percentage" : 0.05, "Sector" : sec })
     
     betasAdd = findBetas(sec, tempStocksList, stocksDict)
     for val in betasAdd:
       betas.append(val)
 
   return pieDict, stocks, betas
-
-def pickRemainderStocks(length, pieDict, sector, weightedRisk, raiseBeta, stocksDict, percentage, stocks):
-  # This is for the remainders stocks
-  for x in range(length):
-    if ((x + 1) % 2 == 1):
-          tickerName = chooseStock(sector, weightedRisk, raiseBeta, stocksDict)
-    else:
-      tickerName = chooseStock(sector, weightedRisk, not (raiseBeta), stocksDict)
-
-    print(tickerName)
-    stocks.append(tickerName)
-    # if ticker was not already chosen 
-    pieDict.append({"Ticker" : tickerName , "Percentage" : percentage, "Sector" : sector })
-
-    return pieDict, stocks
 
 def chooseFirstStock(sector, targetBeta, stocksDict):
   # stockNumber = random.randint(1, 47)
@@ -180,12 +169,12 @@ def chooseStock(sector, targetBeta, raiseBeta, stocksDict):
 def findBetas(sector, stocks, stocksDict):
   betas=[]
   for ticker in stocks:
-    betas.append(int(stocksDict[sector][ticker]))
+    betas.append(stocksDict[sector][ticker])
 
   return betas
 
 def findAvgBeta(betas):
-  return sum(betas) / len(betas)
+  return sum(betas) / Double(len(betas))
 
 
 app = Flask(__name__)
