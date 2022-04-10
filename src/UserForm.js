@@ -61,29 +61,11 @@ class UserForm extends Component {
                </span>
             <div/>
 
-              <select
-                value={this.state.age}
-                onChange={(e) => this.setState({age: e.target.value})} 
-                onBlur={(e) => this.setState({age: e.target.value})} // this is just here for accessibility for disabled people that use screenreaders.
-              >
-                {/* empty option */}
-                <option/> 
-
-                {/* 18-74 */}
-                {
-                  Array.from(Array(57),(x,i)=>i+18).map((ageNum) => (
-                    <option value={ageNum} key={ageNum}>
-                      {ageNum}
-                    </option>
-                  ))
-                }
-
-                {/* 75 internally, but displayed as "75+" */}
-                <option value={75}>
-                  75+
-                </option>
-
-              </select>
+              <div className="slidecontainer">
+                <input onChange={(e) => this.setState({ age: e.target.value })} type="range" min="18" max="75" 
+                value={this.state.age} className="slider" id="myRange"></input>
+                <p>{this.state.age}</p>
+              </div>
             </label>
   
             <br/>
@@ -93,24 +75,11 @@ class UserForm extends Component {
               Risk Tolerance
                </span>
                <div/>
-              <select
-                value={this.state.risk}
-                onChange={(e) => this.setState({risk: e.target.value})} 
-                onBlur={(e) => this.setState({risk: e.target.value})} // this is just here for accessibility for disabled people that use screenreaders.
-              >
-                {/* empty option */}
-                <option/> 
-
-                {/* 1-10 */}
-                {
-                  Array.from(Array(10),(x,i)=>i+1).map((riskNum) => (
-                    <option value={riskNum} key={riskNum}>
-                      {riskNum}
-                    </option>
-                  ))
-                }
-
-              </select>
+               <div className="slidecontainer">
+                    <input onChange={(e) => this.setState({ risk: e.target.value })} type="range" min="1" max="10" 
+                    value={this.state.risk} className="slider" id="myRange"></input>
+                    <p>{this.state.risk}</p>
+              </div>
             </label>
 
             <br/>
