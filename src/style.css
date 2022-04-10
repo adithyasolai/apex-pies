@@ -86,3 +86,25 @@ h2{
   color: rgba(255, 255, 255, 1);
   box-shadow: 0 5px 15px rgba(12, 130, 220, 0.783);
 }
+
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.content {
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: center;
+  outline: none;
+  font-size: 15px;
+  background-color: #f1f1f1;
+}
