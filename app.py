@@ -32,10 +32,8 @@ import pprint
 
 def publishPieToDB(age, risk, sector, userId):
   stocksDict=createDict()
-  pieDict, stocks=makePie(age, risk, sector, stocksDict)
+  pieDict, stocks, betas = makePie(age, risk, sector, stocksDict)
   app.logger.error(pprint.pformat(pieDict))
-
-  betas = findBetas(sector, stocks, stocksDict)
 
   # replace the child value with the userID
   ref = db.reference().child(userId)
@@ -63,32 +61,83 @@ def createDict():
   return stocksDict
 
 
-def makePie(age, risk, sector, stocksDict):
+def makePie(age, userRisk, sector, stocksDict):
   pieDict = []
   stocks=[]
+  betas = []
+  riskDict = {1: 0.7, 2: 0.75, 3: 0.8, 4: 0.9, 5: 1.0, 6: 1.05, 7: 1.1, 8: 1.2, 9:1.25, 10:1.35}
+  riskBetaVal = riskDict[userRisk]
+
+  if (age >= 18 and age <= 25):
+    ageRisk = 1.25
+    weightedRisk = (0.6 * ageRisk) + (0.4 * riskBetaVal)
+  elif (age >= 26 and age <= 40):
+    ageRisk = 1.1
+    weightedRisk = (0.5 * ageRisk) + (0.5 * riskBetaVal)
+  elif (age >= 41 and age <= 50):
+    ageRisk = 1.0
+    weightedRisk = (0.4 * ageRisk) + (0.6 * riskBetaVal)
+  elif (age >= 51 and age <= 60):
+    ageRisk = 0.9
+    weightedRisk = (0.5 * ageRisk) + (0.5 * riskBetaVal)
+  elif (age >= 61 and age <= 70):
+    ageRisk = 0.75
+    weightedRisk = (0.6 * ageRisk) + (0.4 * riskBetaVal)
+  else:
+    ageRisk = 0.7
+    weightedRisk = (0.65 * ageRisk) + (0.35 * riskBetaVal)
 
   # This is for the first stock
-  firstStock = chooseFirstStock(sector, 1.25, stocksDict)
+  firstStock = chooseFirstStock(sector, weightedRisk, stocksDict)
   firstStockBeta = stocksDict[sector][firstStock]
-  if (firstStockBeta > risk):
+  if (firstStockBeta > weightedRisk):
     raiseBeta = False
   else:
     raiseBeta = True
 
-  pieDict.append({"Ticker" : firstStock , "Percentage" : 0.20, "Sector" : sector })
+  pieDict.append({"Ticker" : firstStock , "Percentage" : 0.05, "Sector" : sector })
   stocks.append(firstStock)
 
   # This is for the remainders stocks
-  for x in range(4):
-    if ((x + 1) % 2 == 1):
-          tickerName = chooseStock(sector, risk, raiseBeta, stocksDict)
+  sectors = ["Tech", "Health", "Banking", "Energy"]
+  for sec in sectors:
+    if (sec == sector):
+      length = 11
     else:
-      tickerName = chooseStock(sector, risk, not (raiseBeta), stocksDict)
+      length = 3
+    
+    tempStocksList = []
+    for x in range(length):
+      if ((x + 1) % 2 == 1):
+            tickerName = chooseStock(sec, weightedRisk, raiseBeta, stocksDict)
+      else:
+        tickerName = chooseStock(sec, weightedRisk, not (raiseBeta), stocksDict)
 
+      stocks.append(tickerName)
+      tempStocksList.append(tickerName)
+      # if ticker was not already chosen 
+      pieDict.append({"Ticker" : tickerName , "Percentage" : 0.05, "Sector" : sector })
+    
+    betasAdd = findBetas(sec, tempStocksList, stocksDict)
+    for val in betasAdd:
+      betas.append(val)
+
+  return pieDict, stocks, betas
+
+def pickRemainderStocks(length, pieDict, sector, weightedRisk, raiseBeta, stocksDict, percentage, stocks):
+  # This is for the remainders stocks
+  for x in range(length):
+    if ((x + 1) % 2 == 1):
+          tickerName = chooseStock(sector, weightedRisk, raiseBeta, stocksDict)
+    else:
+      tickerName = chooseStock(sector, weightedRisk, not (raiseBeta), stocksDict)
+
+    print(tickerName)
     stocks.append(tickerName)
     # if ticker was not already chosen 
-    pieDict.append({"Ticker" : tickerName , "Percentage" : 0.20, "Sector" : sector })
-  return pieDict, stocks
+    pieDict.append({"Ticker" : tickerName , "Percentage" : percentage, "Sector" : sector })
+
+    return pieDict, stocks
 
 def chooseFirstStock(sector, targetBeta, stocksDict):
   # stockNumber = random.randint(1, 47)
@@ -105,28 +154,33 @@ def chooseFirstStock(sector, targetBeta, stocksDict):
   return tickerName
 
 def chooseStock(sector, targetBeta, raiseBeta, stocksDict):
-  stockNumber = random.randint(1, 47)
-  stocksList = list(stocksDict[sector].keys())
-  tickerName = stocksList[stockNumber]
-  beta = stocksDict[sector][tickerName]
-
+  listStocks = []
+  cont = True
   if (raiseBeta):
-    if (beta > targetBeta):
-      return tickerName
-    else:
-      tickerName = chooseStock(sector, targetBeta, raiseBeta, stocksDict)
+    while(cont == True):
+      stockNumber = random.randint(1, 47)
+      stocksList = list(stocksDict[sector].keys())
+      tickerName = stocksList[stockNumber]
+      beta = stocksDict[sector][tickerName]
+      if (beta > targetBeta):
+        listStocks.append(tickerName)
+        cont = False
   else:
-    if (beta < targetBeta):
-      return tickerName
-    else:
-      tickerName = chooseStock(sector, targetBeta, raiseBeta, stocksDict)
+    while(cont == True):
+      stockNumber = random.randint(1, 47)
+      stocksList = list(stocksDict[sector].keys())
+      tickerName = stocksList[stockNumber]
+      beta = stocksDict[sector][tickerName]
+      if (beta < targetBeta):
+        listStocks.append(tickerName)
+        cont = False
 
   return tickerName
 
 def findBetas(sector, stocks, stocksDict):
   betas=[]
   for ticker in stocks:
-    betas.append(stocksDict[sector][ticker])
+    betas.append(int(stocksDict[sector][ticker]))
 
   return betas
 
@@ -140,7 +194,7 @@ CORS(app)
 @app.route('/', methods = ['GET', 'POST'])
 def calculatePies():
   if request.method == 'POST':
-    age = request.json['age']
+    age = int(request.json['age'])
     risk = int(request.json['risk'])
     sector = request.json['sector']
     userId = request.json['userId']

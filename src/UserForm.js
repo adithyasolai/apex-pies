@@ -7,11 +7,12 @@ class UserForm extends Component {
   constructor() {
     super();
 
+    var userID = "DummyUser" + parseInt(Math.random() * 1000);
     this.state = {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10
       sector: "", // no sector selected at the beginning.
-      userId: "DummyUser" // filled in later and sent to PieResults page to fetch pies from BackEnd
+      userId: userID // filled in later and sent to PieResults page to fetch pies from BackEnd
     };
   }
 
@@ -38,6 +39,7 @@ class UserForm extends Component {
     console.log("Current Age Value: ", this.state.age); 
     console.log("Current Risk Tolerance Value: ", this.state.risk); 
     console.log("Current Sector Selected: ", this.state.sector); 
+    console.log("Current UserID: ", this.state.userId); 
     return (
       <div className="userForm">
         <form
