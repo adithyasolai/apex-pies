@@ -6,24 +6,27 @@ header {
   margin: 0 auto;
 }
 h1 {
-  font-weight: bold;
-  color: black;
-  font-size: 30px;
+  font-family: 'Aleo', serif;
+  /*font-weight: bold;*/
+  color: #697eaec4;
+  font-size: 50px;
 }
 
 body {
-  background-color:#FFF;
-  background-image: linear-gradient(white, white, white, #95bfd0ff,#95bfd0ff,#899ec3ff,#697eaec4);
-  font-family: Helvetica;
+  background-color:white;
+  /*background-image: linear-gradient(white, white, white, #95bfd0ff,#95bfd0ff,#899ec3ff,);*/
+  font-family: 'Avenir Black', 'Arial Black', sans-serif;
   font-size:18px;
   padding:15px;
   margin: 0px;
   margin-right: 0px;
   margin-bottom: 20px;
   display:table-cell; text-align:center; vertical-align:middle;
+  color: #697eaec4;
   }
 
 html, body {height:100%;}
+
 html {display:table; width:100%;}
 /* for hovering */
 .hide {
@@ -33,4 +36,53 @@ html {display:table; width:100%;}
 .myDIV:hover + .hide {
   display: block;
   color: #181d27ff;
+}
+
+h2{
+  color: #697eaec4;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.hovertext {
+  position: relative;
+  border-bottom: 1px dotted black;
+}
+
+.hovertext:before {
+  content: attr(data-hover);
+  visibility: hidden;
+  opacity: .9;
+  width: 400px;
+  background-color: #374158ff;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  border-radius: 20px;
+  padding: 10px 0;
+  transition: opacity 1s ease-in-out;
+
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 110%;
+}
+
+.hovertext:hover:before {
+  opacity: 1;
+  visibility: visible;
+}
+.button {
+  font-family: ‘Avenir Black’, ‘Arial Black’, sans-serif;
+  text-decoration: none;
+  color: white;
+  background: #899ec3ff ;
+  padding: 15px 40px;
+  border-radius: 4px;
+  font-weight: normal;
+  transition: all 0.2s ease-in-out;
+}
+.glow-button:hover {
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 5px 15px rgba(12, 130, 220, 0.783);
 }
