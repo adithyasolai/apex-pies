@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import banking_logo from "../resources/sector_icons/banking-sector.jpeg";
 import energy_logo from "../resources/sector_icons/energy-sector.jpeg";
@@ -158,6 +159,11 @@ class UserForm extends Component {
             
           
           </form>
+
+          <Link to={`/resourcesfaq`}>
+            <button className = "button glow-button">Resources and FAQ</button>
+          </Link>
+          
 
         </div>
         
