@@ -11,7 +11,7 @@ class UserForm extends Component {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10
       sector: "", // no sector selected at the beginning.
-      userId: "DummyUser", // filled in later and sent to PieResults page to fetch pies from BackEnd
+      userId: "DummyUser868", // filled in later and sent to PieResults page to fetch pies from BackEnd
     };
   }
 
@@ -122,10 +122,6 @@ class UserForm extends Component {
               onBlur={(e) => this.setState({ sector: e.target.value })} // this is just here for accessibility for disabled people that use screenreaders.
             >
               {/* empty option */}
-              <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1"
-              />
               All sectors
               {SECTORS.map((s) => (
                 <option value={s} key={s}>
