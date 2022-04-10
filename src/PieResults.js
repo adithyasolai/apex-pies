@@ -30,8 +30,12 @@ class PieResults extends Component {
         Object.assign(
           {
             loading: false,
-            avgBeta: (Math.round(json.avgBeta * 100) / 100).toFixed(2) ,
-            pie: json.pie
+            avgBeta: (Math.round(json.avgBeta * 100) / 100).toFixed(2),
+            pie: json.pie,
+            vizLink: json.vizLink,
+            username: json.username,
+            apiKey: json.apiKey,
+            iframe: json.iframe
           }
         )
       );
@@ -64,6 +68,7 @@ class PieResults extends Component {
           Age: {age} -- Risk: {risk} -- Sector: {sector} -- User ID: {userId}
         </h1>
 
+        <div dangerouslySetInnerHTML={{__html: this.state.iframe}} />
         <p> Overall Beta of Pie: {this.state.avgBeta} </p>
 
         {
@@ -86,10 +91,14 @@ class PieResults extends Component {
         }
 
         <br/>
-      </div>
+
+
+         
+
+       </div>
     );
   }
-}
+} 
 
 const PieResultsWithRouter = withRouter(PieResults);
 

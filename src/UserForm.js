@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -16,7 +18,7 @@ class UserForm extends Component {
   constructor() {
     super();
 
-    var userID = "DummyUser" + parseInt(Math.random() * 1000);
+    var userID = "DummyUser123";
     this.state = {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10
@@ -137,7 +139,7 @@ class UserForm extends Component {
                 // the below should be a button, and not an image. (so that screen-readers can read it, and it will be more accesible.)
                 // eslint-disable-next-line
                 <span className="hovertext_image" data-hover={SECTOR_HOVER_TEXT[i]}>
-                <button class = "button_image"><img
+                <img
                   className = "sector_images"
                   key={SECTOR_IMAGES[i]}
                   src={SECTOR_IMAGES[i]}
@@ -145,7 +147,7 @@ class UserForm extends Component {
                   onClick={this.handleSectorClick.bind(this)} // bind gives the click handler function context about what `this` is to access the state.
                   alt="asdf"
     
-                /></button></span>
+                /></span>
                 )
               }
               )
