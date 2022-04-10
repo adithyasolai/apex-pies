@@ -156,7 +156,6 @@ class UserForm extends Component {
     
     }
   }
-}
 
 const UserFormWithRouter = withRouter(UserForm);
 
