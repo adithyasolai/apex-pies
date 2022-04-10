@@ -47,13 +47,20 @@
             <html>
             <head>
             </head>
-            <body>
-
-            </body>
+          
+            <h1><p class="p">Pie Calculator</p></h1>
+            
+            <p class="p">Welcome to APEX Pie Calculator. Input your age, risk tolerance, and primary sector to receive a diverse pie of stocks. Hover above any input to learn how each factor affects the stocks you should invest in.</p>
+            
+            
             </html>
             <label > 
-            <div class="myDIV">Age (Hover above me for more info!): </div>
+            <div class="myDIV">Age: </div>
+            
             <div class="hide">Generally speaking, the younger an investor is, the riskier their portfolio can be. This is due to the fact they probably will not be withdrawing their money for years and therefore have much more time to recover and recoup from any losses. The higher the risk of a portfolio, the higher its beta. </div>
+            
+            <div/>
+
               <select
                 value={this.state.age}
                 onChange={(e) => this.setState({age: e.target.value})} 
@@ -78,11 +85,11 @@
 
               </select>
             </label>
-
+  
             <br/>
             <br/>
             <label> 
-            <div class="myDIV">Risk Tolerance (Hover above me for more info!): </div> 
+            <div class="myDIV">Risk Tolerance: </div> 
             <div class="hide">The amount of risk an investor takes on depends on several other factors besides age. An investor should also take into account their existing debt, savings account balance, and net worth. An investor with low debt combined with high savings account balance and net worth would have a higher risk tolerance. 
 </div>
               <select
@@ -107,11 +114,9 @@
 
             <br/>
             <br/>
-            <br/>
-            <br/>
 
             <label>
-            <div class="myDIV"> Sector of Interest (Hover above me for more info!): </div> 
+            <div class="myDIV"> Sector of Interest: </div> 
             <div class="hide">Sectors are very different from each other in terms of risk and return. In general, when compared to Tech and Energy, Banking and Healthcare tend to be less riskier sectors, which means that they typically have a lower return.  
 </div>
               <select
@@ -134,16 +139,16 @@
               </select>
 
             </label>
-            
+           
 
-            <br/>
-            <br/>
             <br/>
             <br/>
             <button>Submit</button>
+          
           </form>
 
         </div>
+        
       )
     
     }
