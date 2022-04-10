@@ -1,6 +1,11 @@
 import { Component } from "react";
 import { withRouter } from "react-router-dom";
 
+// import banking_logo from "../resources/sector_icons/banking-sector.png";
+// import energy_logo from "../resources/sector_icons/energy-sector.png";
+// import health_logo from "../resources/sector_icons/health-sector.png";
+// import tech_logo from "../resources/sector_icons/tech-sector.png";
+
 const SECTORS = ["Tech", "Health", "Energy", "Banking"];
 
 class UserForm extends Component {
