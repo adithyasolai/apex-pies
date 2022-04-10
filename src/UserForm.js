@@ -64,7 +64,7 @@ class UserForm extends Component {
               <div className="slidecontainer">
                 <input onChange={(e) => this.setState({ age: e.target.value })} type="range" min="18" max="75" 
                 value={this.state.age} className="slider" id="myRange"></input>
-                <p>{this.state.age}</p>
+                <p>{this.state.age +" years old"}</p>
               </div>
             </label>
   
