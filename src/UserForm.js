@@ -3,12 +3,13 @@ import { withRouter } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 import banking_logo from "../resources/sector_icons/banking-sector.jpeg";
-import energy_logo from "../resources/sector_icons/energy-sector.png";
-import health_logo from "../resources/sector_icons/health-sector.png";
+import energy_logo from "../resources/sector_icons/energy-sector.jpeg";
+import health_logo from "../resources/sector_icons/health-sector.jpeg";
 import tech_logo from "../resources/sector_icons/tech-sector.jpeg";
 
 const SECTORS = ["Tech", "Health", "Energy", "Banking"];
 const SECTOR_IMAGES = [tech_logo, health_logo, energy_logo, banking_logo]
+const SECTOR_HOVER_TEXT = ["Tech", "Health", "Energy", "Banking"]
 const NUM_SECTORS=SECTORS.length;
 
 class UserForm extends Component {
@@ -70,12 +71,12 @@ class UserForm extends Component {
           >
             {/* missing htmlFor */}
           
-            <h1><p className="p">Pie Calculator</p></h1>
-            
-            <h2><p className="p">Welcome to APEX Pie Calculator. Input your age, risk tolerance, and primary sector to receive a diverse pie of stocks. Hover above any input to learn how each factor affects the stocks you should invest in.</p></h2>
+            <h1><p className="p">Apex Portfolio Calculator</p></h1>
+            <h4><p className="p">An Introduction to Investing & Financial Literacy</p></h4>
+            <h2><p className="p">Welcome to the Apex Pies Calculator! This app is intended for people that are looking to start investing, but don’t know where to start. Don’t worry, we’re here to help! Input your age, your risk tolerance, and what industry you’d like to invest in the most.</p></h2>
             
             <label > 
-            <span className="hovertext" data-hover="Generally speaking, the younger an investor is, the riskier their portfolio can be. This is due to the fact they probably will not be withdrawing their money for years and therefore have much more time to recover and recoup from any losses. The higher the risk of a portfolio, the higher its beta.">
+            <span className="hovertext" data-hover="The younger an investor is, the riskier the portfolio should be. The rationale behind this logic is because these investors have more time until they need to cash out their investments. There are always ups and downs when investing, and having higher risk generally guarantees higher returns in the long run.">
               Age
                </span>
             <div/>
@@ -83,14 +84,14 @@ class UserForm extends Component {
               <div className="slidecontainer">
                 <input onChange={(e) => this.setState({ age: e.target.value })} type="range" min="18" max="75" 
                 value={this.state.age} className="slider" id="myRange"></input>
-                <p>{this.state.age}</p>
+                <p>{this.state.age +" years old"}</p>
               </div>
             </label>
   
             <br/>
             <br/>
             <label> 
-            <span className="hovertext" data-hover="The amount of risk an investor takes on depends on several other factors besides age. An investor should also take into account their existing debt, savings account balance, and net worth. An investor with low debt combined with high savings account balance and net worth would have a higher risk tolerance.">
+            <span className="hovertext" data-hover="The amount of risk an investor takes on depends on several factors. The factors investors should take into account include: their existing debt, savings account balance, and net worth. For example: An investor with low debt combined with high savings account balance and net worth would have a higher risk tolerance.">
               Risk Tolerance
                </span>
                <div/>
@@ -105,7 +106,7 @@ class UserForm extends Component {
             <br/>
 
             <label>
-            <span className="hovertext" data-hover="Sectors are very different from each other in terms of risk and return. In general, when compared to Tech and Energy, Banking and Healthcare tend to be less riskier sectors, which means that they typically have a lower return. ">
+            <span className="hovertext" data-hover="Each sector can provide vastly different returns and have varying levels of risk. Tech and Energy are considered to be high-return, high-risk sectors. Inversely, Banking and Healthcare tend to be less riskier sectors, meaning lower returns. ">
               Sector of Interest
               <div/>
               </span>
@@ -135,13 +136,16 @@ class UserForm extends Component {
                 return (
                 // the below should be a button, and not an image. (so that screen-readers can read it, and it will be more accesible.)
                 // eslint-disable-next-line
-                <img
+                <span className="hovertext_image" data-hover={SECTOR_HOVER_TEXT[i]}>
+                <button class = "button_image"><img
+                  className = "sector_images"
                   key={SECTOR_IMAGES[i]}
                   src={SECTOR_IMAGES[i]}
                   data-index={i}
                   onClick={this.handleSectorClick.bind(this)} // bind gives the click handler function context about what `this` is to access the state.
                   alt="asdf"
-                />
+    
+                /></button></span>
                 )
               }
               )
