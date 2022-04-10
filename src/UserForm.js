@@ -10,6 +10,8 @@ import tech_logo from "../resources/sector_icons/tech-sector.jpeg";
 const SECTORS = ["Tech", "Health", "Energy", "Banking"];
 const SECTOR_IMAGES = [tech_logo, health_logo, energy_logo, banking_logo]
 const SECTOR_HOVER_TEXT = ["Tech", "Health", "Energy", "Banking"]
+const SECTOR_HOVER_INFO = ["Tech: These companies have a high beta and volatility. The technology sector is often one of the most attractive growth investments in an economy. Tech stocks have higher betas than the market, hence the presumed risk. If beta is greater than 1.0 then price swings are larger than the market over time. If beta is less than 1.0 then the stock has less risk and offers lower returns. Investors looking to benefit from intraday price changes and short-term momentum strategies usually pick high beta securities.",
+"Energy: These companies have a high beta and volatility. It is subject to risks such as economic activity level, weather, and environmental regulations. They have potential for high dividends or company growth.", "Banking: Financial companies have a low beta and volatility. The banking sector pays dividends, which demonstrates a great history and provides investors with a share in profits. Value investors are drawn to bank stocks, which are the most susceptible to emotional short-term forces given the leverage and nature of the business.", "Healthcare: These companies have a low beta and volatility. However, users should be cautious of government intervention and principal-agent problems. Positive long-term demographics trends, including an aging global population and a growing middle class in emerging markets. Return in demand for elective procedures, drug sales, medical equipment and diagnostics"]
 const NUM_SECTORS=SECTORS.length;
 
 class UserForm extends Component {
@@ -136,7 +138,7 @@ class UserForm extends Component {
                 return (
                 // the below should be a button, and not an image. (so that screen-readers can read it, and it will be more accesible.)
                 // eslint-disable-next-line
-                <span className="hovertext_image" data-hover={SECTOR_HOVER_TEXT[i]}>
+                <span className="hovertext_image" data-hover={SECTOR_HOVER_INFO[i]}>
                 <button class = "button_image"><img
                   className = "sector_images"
                   key={SECTOR_IMAGES[i]}

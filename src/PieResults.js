@@ -61,10 +61,14 @@ class PieResults extends Component {
     return (
       <div>
         <h1>
-          Age: {age} -- Risk: {risk} -- Sector: {sector} -- User ID: {userId}
+          Age: {age} <br/> Risk: {risk} <br/> Sector: {sector} <br/> User ID: {userId}
         </h1>
 
+        <span className="hovertext" data-hover="Beta is a measure of how a stock/portfolio (pie) moves in comparison to the S&P 500. A beta of 1 means that the pie has the same volatility as the market. A beta of 1.1 means that the pie is 10% more volatile than the market. This means that it will have 10% more excess returns compared to the market.  ">
         <p> Overall Beta of Pie: {this.state.avgBeta} </p>
+              <div/>
+              </span>
+        
 
         {
 

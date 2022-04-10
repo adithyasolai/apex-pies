@@ -6,10 +6,10 @@ header {
   margin: 0 auto;
 }
 h1 {
-  font-family: 'Aleo', serif;
+  font-family: 'Avenir Black', 'Arial Black', sans-serif;
   /*font-weight: bold;*/
   color: #697eaec4;
-  font-size: 50px;
+  font-size: 30px;
 }
 
 body {
@@ -117,7 +117,8 @@ h4 {
   outline: none;
   font-size: 15px;
   background-color: #f1f1f1;
-.button_image {
+}
+  .button_image {
   color: white;
   background-Color: white;
   border-radius: 90px;
