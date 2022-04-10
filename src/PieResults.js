@@ -30,8 +30,12 @@ class PieResults extends Component {
         Object.assign(
           {
             loading: false,
-            avgBeta: (Math.round(json.avgBeta * 100) / 100).toFixed(2) ,
-            pie: json.pie
+            avgBeta: (Math.round(json.avgBeta * 100) / 100).toFixed(2),
+            pie: json.pie,
+            vizLink: json.vizLink,
+            username: json.username,
+            apiKey: json.apiKey,
+            iframe: json.iframe
           }
         )
       );
@@ -64,6 +68,8 @@ class PieResults extends Component {
           Age: {age} <br/> Risk: {risk} <br/> Sector: {sector} <br/> User ID: {userId}
         </h1>
 
+        <div dangerouslySetInnerHTML={{__html: this.state.iframe}} />
+
         <span className="hovertext" data-hover="Beta is a measure of how a stock/portfolio (pie) moves in comparison to the S&P 500. A beta of 1 means that the pie has the same volatility as the market. A beta of 1.1 means that the pie is 10% more volatile than the market. This means that it will have 10% more excess returns compared to the market.  ">
         <p> Overall Beta of Pie: {this.state.avgBeta} </p>
               <div/>
@@ -90,10 +96,14 @@ class PieResults extends Component {
         }
 
         <br/>
-      </div>
+
+
+         
+
+       </div>
     );
   }
-}
+} 
 
 const PieResultsWithRouter = withRouter(PieResults);
 

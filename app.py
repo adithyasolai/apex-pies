@@ -11,6 +11,16 @@ import random
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+from html.parser import HTMLParser
+
+import plotly.express as px
+import plotly
+from bs4 import BeautifulSoup
+import chart_studio
+import chart_studio.plotly as py2
+import chart_studio.tools as tls
+
+
 
 ####
 # `pip install flask` and `pip install flask_cors` before running this server.
@@ -33,15 +43,30 @@ import pprint
 def publishPieToDB(age, risk, sector, userId):
   stocksDict=createDict()
   pieDict, stocks, betas = makePie(age, risk, sector, stocksDict)
-  app.logger.error(pprint.pformat(pieDict))
+  # app.logger.error(pprint.pformat(pieDict))
 
   # replace the child value with the userID
   ref = db.reference().child(userId)
 
   # replace the value for pie to the dictionary created
+  # ref.set({
+  #   'pie': pieDict,
+  #   'avgBeta' : findAvgBeta(betas)
+  # })
+
+  
+  # vizLink = makeViz(userId, pieDict)
+  # app.logger.error(pprint.pformat(vizLink))
+
+  # iframe=tls.get_embed(vizLink)
+  # app.logger.error(pprint.pformat(iframe))
+
+
   ref.set({
     'pie': pieDict,
-    'avgBeta' : findAvgBeta(betas)
+    'avgBeta' : findAvgBeta(betas),
+    'vizLink': vizLink,
+    'iframe': iframe
   })
 
 def createDict():
@@ -178,6 +203,34 @@ def findAvgBeta(betas):
   return sum(betas) / len(betas)
 
 
+
+def makeViz(userID, pieDict):
+  username = 'bhuvan.jama'
+  api_key = 'athHaKcHBgzSdbrNI8md'
+
+  tickers = {}
+  for dictionary in pieDict:
+      tickers[dictionary['Ticker']] = "5.0%"
+
+  tickers_list = list(tickers.keys())
+
+  vals = [0.0] * len(tickers_list)
+  for i in range(len(tickers_list)):
+      vals[i] = 100/len(tickers_list)
+
+
+  df = pd.DataFrame({"Ticker": tickers_list, "Percentages": vals})
+
+  fig = px.pie(df,values="Percentages", names="Ticker")
+  fig.show()      
+
+  chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
+  fileName = str(userID) + "-viz"
+  vizLink = py2.plot(fig, filename = fileName, auto_open = False)
+  
+  return vizLink
+
+
 app = Flask(__name__)
 CORS(app)
 
@@ -206,10 +259,15 @@ def fetchPies():
   userId = request.json['userId']
   result = db.reference().child(userId)
 
-  app.logger.error(type(result.get()))
-  app.logger.error(pprint.pformat(result.get()))
+  resultDict = result.get()
 
-  return jsonify(result.get())
+  resultDict['username'] = "bhuvan.jama"
+  resultDict['apiKey'] = "athHaKcHBgzSdbrNI8md"
+
+  app.logger.error(type(resultDict))
+  app.logger.error(pprint.pformat(resultDict))
+
+  return jsonify(resultDict)
   # return jsonify(result)
 
 

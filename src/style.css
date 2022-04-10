@@ -118,10 +118,11 @@ h4 {
   font-size: 15px;
   background-color: #f1f1f1;
 }
-  .button_image {
+
+.button_image {
   color: white;
   background-Color: white;
-  border-radius: 90px;
+  /* border-radius: 90px; */
 }
 
 
@@ -160,6 +161,8 @@ h4 {
 }
 
 .sector_images{
-  width: 60px;
+  width: 70px;
   padding: 30px;
+  border-radius: 30%;
+  border: 5px solid #95bfd0ff;
 }
