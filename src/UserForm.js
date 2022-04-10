@@ -118,15 +118,15 @@ class UserForm extends Component {
 
           </label>
           
-          <button>Submit</button>
-        </form>
+          </form>
 
-      </div>
-    )
-   
+        </div>
+        
+      )
+    
+    }
   }
-}
 
-const UserFormWithRouter = withRouter(UserForm);
+  const UserFormWithRouter = withRouter(UserForm);
 
-export default UserFormWithRouter;
+  export default UserFormWithRouter;

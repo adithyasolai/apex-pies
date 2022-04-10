@@ -2,6 +2,35 @@ header {
   display: flex;
   align-content: center;
   justify-content: center;
-  width: 1100px;
+  width: 900px;
   margin: 0 auto;
+}
+h1 {
+  font-weight: bold;
+  color: black;
+  font-size: 30px;
+}
+
+body {
+  background-color:#FFF;
+  background-image: linear-gradient(white, white, white, #95bfd0ff,#95bfd0ff,#899ec3ff,#697eaec4);
+  font-family: Helvetica;
+  font-size:18px;
+  padding:15px;
+  margin: 0px;
+  margin-right: 0px;
+  margin-bottom: 20px;
+  display:table-cell; text-align:center; vertical-align:middle;
+  }
+
+html, body {height:100%;}
+html {display:table; width:100%;}
+/* for hovering */
+.hide {
+  display: none;
+}
+    
+.myDIV:hover + .hide {
+  display: block;
+  color: #181d27ff;
 }
