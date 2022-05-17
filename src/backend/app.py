@@ -20,17 +20,18 @@ import chart_studio
 import chart_studio.plotly as py2
 import chart_studio.tools as tls
 
+import time
 
+'''
+`pip install flask` and `pip install flask_cors` before running this server.
 
+Run the `export FLASK_ENV=development` terminal command once before any subsequent `flask run` commands.
 ####
-# `pip install flask` and `pip install flask_cors` before running this server.
-# Run `python app.py` to start the server. Don't use `flask run`!
-####
-
+'''
 
 #Firebase setup
 # Fetch the service account key JSON file contents
-cred = credentials.Certificate('./apex-pies.json')
+cred = credentials.Certificate('../../apex-pies.json')
 
 # Initialize the app with a service account, granting admin privileges
 firebase_admin.initialize_app(cred, {
@@ -43,24 +44,18 @@ import pprint
 def publishPieToDB(age, risk, sector, userId):
   stocksDict=createDict()
   pieDict, stocks, betas = makePie(age, risk, sector, stocksDict)
-  # app.logger.error(pprint.pformat(pieDict))
+  app.logger.info("New Dict: \n" + pprint.pformat(pieDict))
 
   # replace the child value with the userID
   ref = db.reference().child(userId)
 
   # replace the value for pie to the dictionary created
-  # ref.set({
-  #   'pie': pieDict,
-  #   'avgBeta' : findAvgBeta(betas)
-  # })
 
-  
-  # vizLink = makeViz(userId, pieDict)
-  # app.logger.error(pprint.pformat(vizLink))
+  vizLink = makeViz(userId, pieDict)
+  app.logger.info(pprint.pformat("New Viz Link: \n" + vizLink))
 
-  # iframe=tls.get_embed(vizLink)
-  # app.logger.error(pprint.pformat(iframe))
-
+  iframe=tls.get_embed(vizLink)
+  app.logger.info(pprint.pformat("New iFrame HTML: \n" + iframe))
 
   ref.set({
     'pie': pieDict,
@@ -70,7 +65,7 @@ def publishPieToDB(age, risk, sector, userId):
   })
 
 def createDict():
-  df = pd.read_csv(os.path.join(os.path.dirname(__file__), "./resources/stocks.csv"))
+  df = pd.read_csv(os.path.join(os.path.dirname(__file__), "../../resources/stocks.csv"))
   stocksDict = {}
   counter = 0
   for x in df.index:
@@ -85,6 +80,90 @@ def createDict():
 
   return stocksDict
 
+def makeViz(userID, pieDict):
+  username = 'adithyasolai'
+  api_key = 'TibH1jVTDgFFrOA1bbE6'
+
+  tickers = {}
+  for dictionary in pieDict:
+      tickers[dictionary['Ticker']] = "5.0%"
+
+  tickers_list = list(tickers.keys())
+
+  vals = [0.0] * len(tickers_list)
+  for i in range(len(tickers_list)):
+      vals[i] = 100/len(tickers_list)
+
+
+  df = pd.DataFrame({"Ticker": tickers_list, "Percentages": vals})
+
+  fig = px.pie(df,values="Percentages", names="Ticker")
+  fig.show()      
+
+  chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
+  fileName = str(userID) + "-viz"
+  vizLink = py2.plot(fig, filename = fileName, auto_open = False)
+  
+  return vizLink
+
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/', methods = ['GET', 'POST'])
+def calculatePies():
+  if request.method == 'POST':
+    age = int(request.json['age'])
+    risk = int(request.json['risk'])
+    sector = request.json['sector']
+    userId = request.json['userId']
+    #app.logger.error("Age {age} Risk {risk} Sector {sector} UserId {userId}".format(age=age, risk=risk, sector=sector, userId=userId))
+
+    # TODO: Pie Calculation Algorithm goes here!
+    publishPieToDB(age, risk, sector, userId)
+
+    return jsonify("POST Reply Message")
+  elif request.method == 'GET':
+    # Don't worry about this GET case. It's only here if we need it in the future.
+
+    app.logger.info("GET message received")
+    return jsonify("GET Reply Message")
+
+
+@app.route('/fetchpies', methods = ['POST'])
+def fetchPies():
+  # Sleep for 3 seconds to make sure we fetch the new DB data.
+  time.sleep(3)
+
+  userId = request.json['userId']
+  result = db.reference().child(userId)
+
+  resultDict = result.get()
+
+  # Append Plotly credentials to API
+  resultDict['username'] = "adithyasolai"
+  resultDict['apiKey'] = "TibH1jVTDgFFrOA1bbE6"
+
+  app.logger.info("Result Dict Sent to User: \n" + pprint.pformat(resultDict))
+
+  return jsonify(resultDict)
+
+
+'''
+Uncomment the line below to manually allow Debug Mode when 
+starting this Flask server. If uncommented, Debug Mode will
+only be activated if the `python app.py` terminal command is used.
+
+Alternatively, keep this line of code commented and just run the
+`export FLASK_ENV=development` terminal command once before 
+any subsequent `flask run` commands.
+'''
+# app.run(debug=True)
+
+
+'''
+Pie-Making Logic put here for organization
+'''
 
 def makePie(age, userRisk, sector, stocksDict):
   pieDict = []
@@ -198,77 +277,5 @@ def findBetas(sector, stocks, stocksDict):
 
   return betas
 
-def findAvgBeta(betas):
-  
+def findAvgBeta(betas):  
   return sum(betas) / len(betas)
-
-
-
-def makeViz(userID, pieDict):
-  username = 'bhuvan.jama'
-  api_key = 'athHaKcHBgzSdbrNI8md'
-
-  tickers = {}
-  for dictionary in pieDict:
-      tickers[dictionary['Ticker']] = "5.0%"
-
-  tickers_list = list(tickers.keys())
-
-  vals = [0.0] * len(tickers_list)
-  for i in range(len(tickers_list)):
-      vals[i] = 100/len(tickers_list)
-
-
-  df = pd.DataFrame({"Ticker": tickers_list, "Percentages": vals})
-
-  fig = px.pie(df,values="Percentages", names="Ticker")
-  fig.show()      
-
-  chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
-  fileName = str(userID) + "-viz"
-  vizLink = py2.plot(fig, filename = fileName, auto_open = False)
-  
-  return vizLink
-
-
-app = Flask(__name__)
-CORS(app)
-
-@app.route('/', methods = ['GET', 'POST'])
-def calculatePies():
-  if request.method == 'POST':
-    age = int(request.json['age'])
-    risk = int(request.json['risk'])
-    sector = request.json['sector']
-    userId = request.json['userId']
-    #app.logger.error("Age {age} Risk {risk} Sector {sector} UserId {userId}".format(age=age, risk=risk, sector=sector, userId=userId))
-
-    # TODO: Pie Calculation Algorithm goes here!
-    publishPieToDB(age, risk, sector, userId)
-
-    return jsonify("POST Reply Message")
-  elif request.method == 'GET':
-    # Don't worry about this GET case. It's only here if we need it in the future.
-
-    app.logger.info("GET message received")
-    return jsonify("GET Reply Message")
-
-
-@app.route('/fetchpies', methods = ['POST'])
-def fetchPies():
-  userId = request.json['userId']
-  result = db.reference().child(userId)
-
-  resultDict = result.get()
-
-  resultDict['username'] = "bhuvan.jama"
-  resultDict['apiKey'] = "athHaKcHBgzSdbrNI8md"
-
-  app.logger.error(type(resultDict))
-  app.logger.error(pprint.pformat(resultDict))
-
-  return jsonify(resultDict)
-  # return jsonify(result)
-
-
-app.run(debug=True)
