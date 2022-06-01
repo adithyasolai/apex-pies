@@ -34,6 +34,9 @@ class UserForm extends Component {
     };
   }
 
+  // Handler for when user clicks on a sector image.
+  // The selected sector for the backend algorithm and the highlighted sector image in the front-end
+  // should change to the clicked sector,
   handleSectorClick(event) {
     const sectorIndex = +event.target.dataset.index;
     this.setState({
@@ -47,6 +50,12 @@ class UserForm extends Component {
     });
   }
 
+  // Handler for when the user clicks Submit and requests a diversified Pie based on their inputs.
+  // A loading screen should show in the front-end immediately after the Submit button is clicked.
+  // The loading screen should stay until the backend server confirms that the new Pie has been
+  // calculated and stored in the Firebase DB.
+  // Once the backend server gives this confirmation, we will serve the PieResults page, which
+  // will show another loading screen until the Plotly chart is fetched from the backend.
   async handleSubmit(event) {
     // Show "Creating Your Pie ..." screen while waiting for Pie to be published to DB
     this.setState({
@@ -55,6 +64,9 @@ class UserForm extends Component {
 
     event.preventDefault();
 
+    // Send request to backend server to calculate a diversified Pie
+    // for the user's selected inputs (age, risk tolerance, and sector).
+    // Wait for the request to finish.
     await fetch("http://localhost:5000/", {
       method: "POST",
       headers: {
@@ -63,6 +75,9 @@ class UserForm extends Component {
       body: JSON.stringify(this.state),
     });
 
+    // Move to the PieResults page after confirming that backend server finished making Pie.
+    // Also sends the current state as props to the PieResults page so that
+    // the PieResults page has access to the user's selected inputs.
     this.props.history.push({
       pathname: "/pieresults",
       state: this.state,
@@ -70,12 +85,15 @@ class UserForm extends Component {
   }
 
   render() {
+    // Loading screen that is shown immediately after the user clicks Submit button.
     if (this.state.loading) {
       return <h2>Creating your Pie ...</h2>;
     }
+
     console.log("Current Age Value: ", this.state.age);
     console.log("Current Risk Tolerance Value: ", this.state.risk);
     console.log("Current Sector Selected: ", this.state.sector);
+
     return (
       <div className="userForm">
         <form onSubmit={this.handleSubmit.bind(this)}>
@@ -164,6 +182,7 @@ class UserForm extends Component {
 
           <br/>
 
+          {/* Display currently-selected sector. */}
           <p> {this.state.sector} </p>
 
           {/* Sector of Interest Buttons */}
@@ -192,7 +211,7 @@ class UserForm extends Component {
           </div>
 
           <br />
-          <br />
+
           <button className="button glow-button">Submit</button>
         </form>
 
