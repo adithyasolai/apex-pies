@@ -29,7 +29,8 @@ class UserForm extends Component {
       risk: 1, // ranges from 1-10
       sector: "Tech", // no sector selected at the beginning.
       userId: userID, // filled in later and sent to PieResults page to fetch pies from BackEnd
-      activeSectorImageIndex: 0,
+      activeSectorImageIndex: 0, // changes the currently highlighted sector image+dropdown based on what is selected
+      loading: false // facilitates when the "Creating Pie..." screen shows
     };
   }
 
@@ -47,8 +48,12 @@ class UserForm extends Component {
   }
 
   async handleSubmit(event) {
+    // Show "Creating Your Pie ..." screen while waiting for Pie to be published to DB
+    this.setState({
+      loading: true
+    });
+
     event.preventDefault();
-    console.log(JSON.stringify(this.state));
 
     await fetch("http://localhost:5000/", {
       method: "POST",
@@ -65,6 +70,9 @@ class UserForm extends Component {
   }
 
   render() {
+    if (this.state.loading) {
+      return <h2>Creating your Pie ...</h2>;
+    }
     console.log("Current Age Value: ", this.state.age);
     console.log("Current Risk Tolerance Value: ", this.state.risk);
     console.log("Current Sector Selected: ", this.state.sector);
