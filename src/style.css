@@ -131,6 +131,12 @@ h4 {
   border-bottom: 1px dotted black;
 }
 
+/* Creates a "glow" effect when hovering over a sector image */
+.glow-sectorimage:hover {
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 5px 15px rgba(12, 130, 220, 0.783);
+}
+
 .hovertext_image:before {
   content: attr(data-hover);
   visibility: hidden;

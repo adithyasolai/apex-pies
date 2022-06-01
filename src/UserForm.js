@@ -182,7 +182,7 @@ class UserForm extends Component {
                   data-hover={SECTOR_HOVER_INFO[i]}
                 >
                   <img
-                    className="sector_images"
+                    className="sector_images glow-sectorimage"
                     key={SECTOR_IMAGES[i]}
                     src={SECTOR_IMAGES[i]}
                     data-index={i}
