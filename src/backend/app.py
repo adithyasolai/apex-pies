@@ -69,7 +69,6 @@ def publishPieToDB(age, risk, sector, userId):
 def createDict():
   df = pd.read_csv(os.path.join(os.path.dirname(__file__), "../../resources/stocks.csv"))
   stocksDict = {}
-  counter = 0
   for x in df.index:
     sector = df["Sector"][x]
     ticker = df["Ticker"][x]
@@ -87,8 +86,10 @@ def makeViz(userID, pieDict):
   api_key = 'TibH1jVTDgFFrOA1bbE6'
 
   tickers_list = []
+  sectors_list = []
   for pie in pieDict:
       tickers_list.append(pie['Ticker'])
+      sectors_list.append(pie['Sector'])
 
   # Just giving equal % weightage to each slice of the pie
   vals = [0.0] * len(tickers_list)
@@ -96,9 +97,9 @@ def makeViz(userID, pieDict):
       vals[i] = 100/len(tickers_list)
 
   # This map determines what is shown in the hovertext of each slice
-  df = pd.DataFrame({"Ticker": tickers_list, "Percentage": vals})
+  df = pd.DataFrame({"Ticker": tickers_list, "Percentage": vals, "Sector": sectors_list})
 
-  fig = px.pie(df,values="Percentage", names="Ticker")
+  fig = px.pie(df,values="Percentage", names="Ticker", hover_data=["Sector"])
 
   chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
   fileName = str(userID) + "-viz"
@@ -175,7 +176,7 @@ def makePie(age, userRisk, sector, stocksDict):
   pieDict = []
   stocks=[]
   betas = []
-  riskDict = {1: 0.7, 2: 0.75, 3: 0.8, 4: 0.9, 5: 1.0, 6: 1.05, 7: 1.1, 8: 1.2, 9:1.25, 10:1.35}
+  riskDict = {1: 0.7, 2: 0.75, 3: 0.8, 4: 0.9, 5: 1.0, 6: 1.05, 7: 1.1, 8: 1.2, 9: 1.25, 10: 1.35}
   riskBetaVal = riskDict[userRisk]
 
   if (age >= 18 and age <= 25):
