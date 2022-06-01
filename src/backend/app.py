@@ -87,9 +87,11 @@ def makeViz(userID, pieDict):
 
   tickers_list = []
   sectors_list = []
+  beta_list = []
   for pie in pieDict:
       tickers_list.append(pie['Ticker'])
       sectors_list.append(pie['Sector'])
+      beta_list.append(pie['Beta'])
 
   # Just giving equal % weightage to each slice of the pie
   vals = [0.0] * len(tickers_list)
@@ -97,9 +99,11 @@ def makeViz(userID, pieDict):
       vals[i] = 100/len(tickers_list)
 
   # This map determines what is shown in the hovertext of each slice
-  df = pd.DataFrame({"Ticker": tickers_list, "Percentage": vals, "Sector": sectors_list})
+  df = pd.DataFrame({"Ticker": tickers_list, "Percentage": vals, "Sector": sectors_list, "Beta": beta_list})
 
-  fig = px.pie(df,values="Percentage", names="Ticker", hover_data=["Sector"])
+  fig = px.pie(df,values="Percentage", names="Ticker", hover_data=["Sector", "Beta"])
+
+  fig.update_traces(hovertemplate='Ticker: %{label} <br> Percentage: %{value} <br> Sector: %{customdata[0][0]} <br> Beta: %{customdata[0][1]}')
 
   chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
   fileName = str(userID) + "-viz"
@@ -206,7 +210,7 @@ def makePie(age, userRisk, sector, stocksDict):
   else:
     raiseBeta = True
 
-  pieDict.append({"Ticker" : firstStock , "Percentage" : 0.05, "Sector" : sector })
+  pieDict.append({"Ticker" : firstStock , "Percentage" : 0.05, "Sector" : sector, "Beta" : firstStockBeta })
   stocks.append(firstStock)
 
   # This is for the remainders stocks
@@ -231,7 +235,7 @@ def makePie(age, userRisk, sector, stocksDict):
       stocks.append(tickerName)
       tempStocksList.append(tickerName)
       # if ticker was not already chosen 
-      pieDict.append({"Ticker" : tickerName , "Percentage" : 0.05, "Sector" : sec })
+      pieDict.append({"Ticker" : tickerName , "Percentage" : 0.05, "Sector" : sec , "Beta" : stocksDict[sec][tickerName]})
     
     betasAdd = findBetas(sec, tempStocksList, stocksDict)
     for val in betasAdd:
