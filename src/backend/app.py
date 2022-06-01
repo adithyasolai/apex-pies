@@ -100,7 +100,6 @@ def makeViz(userID, pieDict):
   df = pd.DataFrame({"Ticker": tickers_list, "Percentages": vals})
 
   fig = px.pie(df,values="Percentages", names="Ticker")
-  fig.show()      
 
   chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
   fileName = str(userID) + "-viz"
