@@ -70,7 +70,6 @@ class PieResults extends Component {
           {userId}
         </h1>
 
-
         {/* Embed the Plotly Pie Chart */}
         <div dangerouslySetInnerHTML={{ __html: this.state.iframe }} />
 

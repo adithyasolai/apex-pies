@@ -30,7 +30,7 @@ class UserForm extends Component {
       sector: "Tech", // no sector selected at the beginning.
       userId: userID, // filled in later and sent to PieResults page to fetch pies from BackEnd
       activeSectorImageIndex: 0, // changes the currently highlighted sector image+dropdown based on what is selected
-      loading: false // facilitates when the "Creating Pie..." screen shows
+      loading: false, // facilitates when the "Creating Pie..." screen shows
     };
   }
 
@@ -50,7 +50,7 @@ class UserForm extends Component {
   async handleSubmit(event) {
     // Show "Creating Your Pie ..." screen while waiting for Pie to be published to DB
     this.setState({
-      loading: true
+      loading: true,
     });
 
     event.preventDefault();
@@ -81,9 +81,12 @@ class UserForm extends Component {
         <form onSubmit={this.handleSubmit.bind(this)}>
           {/* missing htmlFor */}
 
+          {/* Title */}
           <h1>
             <p className="p">Apex Portfolio Calculator</p>
           </h1>
+
+          {/* Introductory Text */}
           <h4>
             <p className="p">
               An Introduction to Investing & Financial Literacy
@@ -99,6 +102,7 @@ class UserForm extends Component {
             </p>
           </h2>
 
+          {/* Age Slider */}
           <label>
             <span
               className="hovertext"
@@ -124,6 +128,8 @@ class UserForm extends Component {
 
           <br />
           <br />
+
+          {/* Risk Tolerance Slider */}
           <label>
             <span
               className="hovertext"
@@ -147,33 +153,23 @@ class UserForm extends Component {
           </label>
 
           <br />
-          <br />
 
-          <label>
-            <span
-              className="hovertext"
-              data-hover="Each sector can provide vastly different returns and have varying levels of risk. Tech and Energy are considered to be high-return, high-risk sectors. Inversely, Banking and Healthcare tend to be less riskier sectors, meaning lower returns. "
-            >
-              Sector of Interest
-              <div />
-            </span>
-            <select
-              value={this.state.sector}
-              onChange={(e) => this.setState({ sector: e.target.value })}
-              onBlur={(e) => this.setState({ sector: e.target.value })} // this is just here for accessibility for disabled people that use screenreaders.
-            >
-              {/* empty option */}
-              All sectors
-              {SECTORS.map((s) => (
-                <option value={s} key={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </label>
+          {/* Sector of Interest Hoverable Text */}
+          <span
+            className="hovertext"
+            data-hover="Each sector can provide vastly different returns and have varying levels of risk. Tech and Energy are considered to be high-return, high-risk sectors. Inversely, Banking and Healthcare tend to be less riskier sectors, meaning lower returns. "
+          >
+            Sector of Interest
+          </span>
 
+          <br/>
+
+          <p> {this.state.sector} </p>
+
+          {/* Sector of Interest Buttons */}
           <div>
             {Array.from(Array(NUM_SECTORS), (x, i) => i).map((i) => {
+              const borderStyle = i == this.state.activeSectorImageIndex ? "5px solid #ff0000": "5px solid #95bfd0ff";
               return (
                 // the below should be a button, and not an image. (so that screen-readers can read it, and it will be more accesible.)
                 // eslint-disable-next-line
@@ -188,6 +184,7 @@ class UserForm extends Component {
                     data-index={i}
                     onClick={this.handleSectorClick.bind(this)} // bind gives the click handler function context about what `this` is to access the state.
                     alt="asdf"
+                    style={{border : borderStyle}}
                   />
                 </span>
               );
