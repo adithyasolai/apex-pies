@@ -70,9 +70,6 @@ class PieResults extends Component {
           {userId}
         </h1>
 
-        {/* Embed the Plotly Pie Chart */}
-        <div dangerouslySetInnerHTML={{ __html: this.state.iframe }} />
-
         {/* Educational Hovertext for Beta */}
         {/* TODO: Not really clear that this Beta text is hoverable to user. Need to improve the UI. */}
         <span
@@ -84,6 +81,9 @@ class PieResults extends Component {
           <p> Overall Beta of Pie: {this.state.avgBeta} </p>
           <div />
         </span>
+
+        {/* Embed the Plotly Pie Chart */}
+        <div dangerouslySetInnerHTML={{ __html: this.state.iframe }} />
 
         {/* Lists information about each stock in our Pie */}
         {Array.from(Array(numStocks), (x, i) => i).map((stockIndex) => {

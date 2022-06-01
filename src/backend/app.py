@@ -86,20 +86,19 @@ def makeViz(userID, pieDict):
   username = 'adithyasolai'
   api_key = 'TibH1jVTDgFFrOA1bbE6'
 
-  tickers = {}
-  for dictionary in pieDict:
-      tickers[dictionary['Ticker']] = "5.0%"
+  tickers_list = []
+  for pie in pieDict:
+      tickers_list.append(pie['Ticker'])
 
-  tickers_list = list(tickers.keys())
-
+  # Just giving equal % weightage to each slice of the pie
   vals = [0.0] * len(tickers_list)
   for i in range(len(tickers_list)):
       vals[i] = 100/len(tickers_list)
 
+  # This map determines what is shown in the hovertext of each slice
+  df = pd.DataFrame({"Ticker": tickers_list, "Percentage": vals})
 
-  df = pd.DataFrame({"Ticker": tickers_list, "Percentages": vals})
-
-  fig = px.pie(df,values="Percentages", names="Ticker")
+  fig = px.pie(df,values="Percentage", names="Ticker")
 
   chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
   fileName = str(userID) + "-viz"
