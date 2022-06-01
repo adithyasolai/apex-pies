@@ -15,6 +15,8 @@ class PieResults extends Component {
   // on this user's Pies, and waiting for that POST request to finish.
   async componentDidMount() {
     try {
+      // Send request to backend server to fetch the Pie & Plotly information
+      // for the current userId. Wait for the request to give a response.
       const response = await fetch("http://localhost:5000/fetchpies", {
         method: "POST",
         headers: {
@@ -23,12 +25,14 @@ class PieResults extends Component {
         body: JSON.stringify({ userId: this.props.location.state.userId }),
       });
 
+      // removing the `await` here causes the PieReults page to just hang for some reason
       const json = await response.json();
 
       console.log(json.avgBeta);
       console.log(json.pie);
-      // .then(data => {console.log(data); this.setState({pieData: data})});
 
+      // Put all the results from the backend server into our State to be rendered.
+      // Remove the loading screen so that the page can finally be rendered.
       this.setState(
         // a fast way of just putting all the API's return values into the state of this component instead of manually typing out
         // each field (name, image, breed, location, etc.)
@@ -48,16 +52,17 @@ class PieResults extends Component {
   }
 
   render() {
+    // loading screen while waiting for backend server to give Pie information
     if (this.state.loading) {
       return <h2>loading ...</h2>;
     }
+    
     const age = this.props.location.state.age;
     const risk = this.props.location.state.risk;
     const sector = this.props.location.state.sector;
     const userId = this.props.location.state.userId;
-    console.log(this.state);
-
     const numStocks = Object.keys(this.state.pie).length;
+    console.log(this.state);
     console.log("Number of stocks", numStocks);
 
     const lineBreak = <br />;
@@ -66,8 +71,13 @@ class PieResults extends Component {
       <div>
         {/* Display fields chosen by user in User Form */}
         <h1>
-          Age: {age} <br /> Risk: {risk} <br /> Sector: {sector} <br /> User ID:{" "}
-          {userId}
+          User ID: {userId}
+          <br /> 
+          Age: {age} 
+          <br /> 
+          Risk: {risk} 
+          <br /> 
+          Sector: {sector} 
         </h1>
 
         {/* Educational Hovertext for Beta */}
