@@ -64,6 +64,8 @@ def publishPieToDB(age, risk, sector, userId):
     'iframe': iframe
   })
 
+  app.logger.info("Published data to Firebase DB...")
+
 def createDict():
   df = pd.read_csv(os.path.join(os.path.dirname(__file__), "../../resources/stocks.csv"))
   stocksDict = {}
@@ -107,12 +109,17 @@ def makeViz(userID, pieDict):
   return vizLink
 
 
+'''
+GET/POST Handlers that get called by front-end.
+'''
+
 app = Flask(__name__)
 CORS(app)
 
 @app.route('/', methods = ['GET', 'POST'])
 def calculatePies():
   if request.method == 'POST':
+    app.logger.info("Starting / POST Run...")
     age = int(request.json['age'])
     risk = int(request.json['risk'])
     sector = request.json['sector']
@@ -121,6 +128,8 @@ def calculatePies():
 
     # TODO: Pie Calculation Algorithm goes here!
     publishPieToDB(age, risk, sector, userId)
+
+    app.logger.info("Finished / POST Run...")
 
     return jsonify("POST Reply Message")
   elif request.method == 'GET':
@@ -132,8 +141,7 @@ def calculatePies():
 
 @app.route('/fetchpies', methods = ['POST'])
 def fetchPies():
-  # Sleep for 3 seconds to make sure we fetch the new DB data.
-  time.sleep(3)
+  app.logger.info("Starting /fetchpies POST Run...")
 
   userId = request.json['userId']
   result = db.reference().child(userId)
