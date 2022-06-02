@@ -6,6 +6,8 @@ from flask import request
 import pandas as pd
 import random
 
+import yfinance as yf
+
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
@@ -102,8 +104,12 @@ def makeViz(userID, pieDict):
   for i in range(len(tickers_list)):
       vals[i] = 100/len(tickers_list)
 
-  # This map determines what is shown in the hovertext of each slice
-  df = pd.DataFrame({"Ticker": tickers_list, "Percentage": vals, "Sector": sectors_list, "Beta": beta_list})
+  # This map determines what data is available to be shown in the hovertext of each slice
+  df = pd.DataFrame({"Ticker": tickers_list, 
+                    "Percentage": vals, 
+                    "Sector": sectors_list, 
+                    "Beta": beta_list
+                    })
 
   fig = px.pie(df,values="Percentage", names="Ticker", hover_data=["Sector", "Beta"])
 
@@ -180,7 +186,92 @@ any subsequent `flask run` commands.
 Pie-Making Logic
 '''
 
-def makePie(age, userRiskTolerance, userSectorOfInterest, stocksDict):
+def makePie(userAge, userRiskTolerance, userSectorOfInterest, stocksDict):
+  targetPortfolioBeta = calculateTargetPortfolioBeta(userAge, userRiskTolerance)
+
+  app.logger.info("Targeted Portfolio Beta: " + str(targetPortfolioBeta))
+
+  ### Now that we have finalized a target beta for the portfolio,
+  ### we can start the stock-picking algorithm that tries to balance
+  ### the final portfolio to meet the target portfolio beta.
+
+  # A list of dictionaries that describes the final overall Pie.
+  # Each dictionary is information about one stock chosen for the Pie.
+  pieDict = []
+
+  # Only keeps track of the chosen stock tickers for the Pie in the order that they were selected.
+  stocks=[]
+  # Only keeps track of the betas of the chosen stocks for the Pie in the order that they were selected.
+  betas = []
+
+  # Choose a first stock for the portfolio that has a beta close to the target portfolio beta
+  # to assist the beta balancing algorithm.
+  # Choose the first stock from the user's selected Sector of Interest
+  firstStockTicker = chooseFirstStock(userSectorOfInterest, targetPortfolioBeta, stocksDict)
+  # Fetch the beta for the first chosen stock
+  firstStockBeta = stocksDict[userSectorOfInterest][firstStockTicker]
+  # Fetch other important public information on the first chosen stock
+  # firstStockCompanyName = fetchYFinanceInfo(firstStockTicker)
+
+  # Add the first chosen stock to the portfolio
+  pieDict.append({"Ticker" : firstStockTicker , 
+                  "Percentage" : 0.05, 
+                  "Sector" : userSectorOfInterest, 
+                  "Beta" : firstStockBeta})
+  stocks.append(firstStockTicker)
+  betas.append(firstStockBeta)
+
+  # If the first chosen stock's beta is less than the target portfolio beta, then the next chosen stock
+  # should raise the beta. Otherwise, the next chosen stock should reduce the beta.
+  raiseBeta = firstStockBeta < targetPortfolioBeta
+
+  # Choose the remaining stocks using the `raiseBeta` from the first chosen stock as a starting point.
+  sectors = ["Tech", "Health", "Banking", "Energy"]
+  for sector in sectors:
+    # If we are picking stocks for the user's selected Sector of Interest, then
+    # pick 10 stocks in that sector. Otherwise, pick only 3 stocks for each of the remaining sectors.
+    # We have already picked the first stock in the portfolio from the user's selected Sector of Interest.
+    # Therefore, the final portfolio will have 11 stocks from the user's selected Sector after we pick 10
+    # more stocks from that Sector. The final portfolio will also have 9 stocks combined from the other 3
+    # sectors because we pick 3 stocks in each. In total, there will be 20 stocks in the portfolio with
+    # equal 5% weightage given to each.
+    if (sector == userSectorOfInterest):
+      numberOfStocksToPick = 10
+    else:
+      numberOfStocksToPick = 3
+    
+    for _ in range(numberOfStocksToPick):
+      chosenStockTickerName, chosenStockBeta = chooseStock(sector, targetPortfolioBeta, raiseBeta, stocksDict)
+
+      app.logger.info("Fetching YFinance for {ticker} ...".format(ticker=chosenStockTickerName))
+
+      # Fetch other important public information on the first chosen stock
+      # chosenStockCompanyName = fetchYFinanceInfo(chosenStockTickerName)
+
+      # Add the chosen stock to the portfolio
+      pieDict.append({"Ticker" : chosenStockTickerName , 
+                      "Percentage" : 0.05, 
+                      "Sector" : sector , 
+                      "Beta" : chosenStockBeta})
+      stocks.append(chosenStockTickerName)
+      betas.append(chosenStockBeta)
+
+      # Re-calculate the new average beta of the portfolio
+      newPortfolioBeta = findAvgBeta(betas)
+
+      # Re-evaluate whether the next chosen stock should raise or reduce the portfolio's beta
+      raiseBeta = newPortfolioBeta < targetPortfolioBeta
+      
+  return pieDict, stocks, betas
+
+def fetchYFinanceInfo(ticker):
+  yfTicker = yf.Ticker(ticker)
+  info_dict = yfTicker.info
+  companyName = info_dict['shortName']
+
+  return companyName
+
+def calculateTargetPortfolioBeta(userAge, userRiskTolerance):
   # The Keys are the possible Risk Tolerance levels (1-10) from the user.
   # The Values are baseline betas for a portfolio made with the key's Risk Tolerance level.
   # TODO: May need to consider storing this in the Firebase DB, or at least as a global variable.
@@ -209,86 +300,24 @@ def makePie(age, userRiskTolerance, userSectorOfInterest, stocksDict):
   # TODO: This goes against Benjamin Graham's philosophy that the amount of risk in your portfolio should be 
   # determined not by age, but rather by how much effort one is willing to put into the management of
   # their portfolio.
-  if (age >= 18 and age <= 25):
+  if (userAge >= 18 and userAge <= 25):
     ageRisk = 1.25
-    targetPortfolioBeta = (0.4 * ageRisk) + (0.6 * riskToleranceBaselineBeta)
-  elif (age >= 26 and age <= 40):
+    return (0.4 * ageRisk) + (0.6 * riskToleranceBaselineBeta)
+  elif (userAge >= 26 and userAge <= 40):
     ageRisk = 1.1
-    targetPortfolioBeta = (0.45 * ageRisk) + (0.55 * riskToleranceBaselineBeta)
-  elif (age >= 41 and age <= 50):
+    return (0.45 * ageRisk) + (0.55 * riskToleranceBaselineBeta)
+  elif (userAge >= 41 and userAge <= 50):
     ageRisk = 1.0
-    targetPortfolioBeta = (0.5 * ageRisk) + (0.5 * riskToleranceBaselineBeta)
-  elif (age >= 51 and age <= 60):
+    return (0.5 * ageRisk) + (0.5 * riskToleranceBaselineBeta)
+  elif (userAge >= 51 and userAge <= 60):
     ageRisk = 0.9
-    targetPortfolioBeta = (0.55 * ageRisk) + (0.45 * riskToleranceBaselineBeta)
-  elif (age >= 61 and age <= 70):
+    return (0.55 * ageRisk) + (0.45 * riskToleranceBaselineBeta)
+  elif (userAge >= 61 and userAge <= 70):
     ageRisk = 0.75
-    targetPortfolioBeta = (0.6 * ageRisk) + (0.4 * riskToleranceBaselineBeta)
+    return (0.6 * ageRisk) + (0.4 * riskToleranceBaselineBeta)
   else:
     ageRisk = 0.7
-    targetPortfolioBeta = (0.65 * ageRisk) + (0.35 * riskToleranceBaselineBeta)
-
-  app.logger.info("Targeted Portfolio Beta: " + str(targetPortfolioBeta))
-
-  ### Now that we have finalized a target beta for the portfolio,
-  ### we can start the stock-picking algorithm that tries to balance
-  ### the final portfolio to meet the target portfolio beta.
-
-  # A list of dictionaries that describes the final overall Pie.
-  # Each dictionary is information about one stock chosen for the Pie.
-  pieDict = []
-
-  # Only keeps track of the chosen stock tickers for the Pie in the order that they were selected.
-  stocks=[]
-  # Only keeps track of the betas of the chosen stocks for the Pie in the order that they were selected.
-  betas = []
-
-  # Choose a first stock for the portfolio that has a beta close to the target portfolio beta
-  # to assist the beta balancing algorithm.
-  # Choose the first stock from the user's selected Sector of Interest
-  firstStock = chooseFirstStock(userSectorOfInterest, targetPortfolioBeta, stocksDict)
-  # Fetch the beta for the first chosen stock
-  firstStockBeta = stocksDict[userSectorOfInterest][firstStock]
-
-  # Add the first chosen stock to the portfolio
-  pieDict.append({"Ticker" : firstStock , "Percentage" : 0.05, "Sector" : userSectorOfInterest, "Beta" : firstStockBeta })
-  stocks.append(firstStock)
-  betas.append(firstStockBeta)
-
-  # If the first chosen stock's beta is less than the target portfolio beta, then the next chosen stock
-  # should raise the beta. Otherwise, the next chosen stock should reduce the beta.
-  raiseBeta = firstStockBeta < targetPortfolioBeta
-
-  # Choose the remaining stocks using the `raiseBeta` from the first chosen stock as a starting point.
-  sectors = ["Tech", "Health", "Banking", "Energy"]
-  for sector in sectors:
-    # If we are picking stocks for the user's selected Sector of Interest, then
-    # pick 10 stocks in that sector. Otherwise, pick only 3 stocks for each of the remaining sectors.
-    # We have already picked the first stock in the portfolio from the user's selected Sector of Interest.
-    # Therefore, the final portfolio will have 11 stocks from the user's selected Sector after we pick 10
-    # more stocks from that Sector. The final portfolio will also have 9 stocks combined from the other 3
-    # sectors because we pick 3 stocks in each. In total, there will be 20 stocks in the portfolio with
-    # equal 5% weightage given to each.
-    if (sector == userSectorOfInterest):
-      numberOfStocksToPick = 10
-    else:
-      numberOfStocksToPick = 3
-    
-    for _ in range(numberOfStocksToPick):
-      chosenStockTickerName, chosenStockBeta = chooseStock(sector, targetPortfolioBeta, raiseBeta, stocksDict)
-
-      # Add the chosen stock to the portfolio
-      pieDict.append({"Ticker" : chosenStockTickerName , "Percentage" : 0.05, "Sector" : sector , "Beta" : chosenStockBeta})
-      stocks.append(chosenStockTickerName)
-      betas.append(chosenStockBeta)
-
-      # Re-calculate the new average beta of the portfolio
-      newPortfolioBeta = findAvgBeta(betas)
-
-      # Re-evaluate whether the next chosen stock should raise or reduce the portfolio's beta
-      raiseBeta = newPortfolioBeta < targetPortfolioBeta
-      
-  return pieDict, stocks, betas
+    return (0.65 * ageRisk) + (0.35 * riskToleranceBaselineBeta)
 
 # Picks a stock from the given sector that is within +/- 0.2 beta
 # from the target portfolio beta to serve as a good starting point
