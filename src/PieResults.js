@@ -96,7 +96,7 @@ class PieResults extends Component {
         <div dangerouslySetInnerHTML={{ __html: this.state.iframe }} />
 
         {/* Lists information about each stock in our Pie */}
-        {Array.from(Array(numStocks), (x, i) => i).map((stockIndex) => {
+        {/* {Array.from(Array(numStocks), (x, i) => i).map((stockIndex) => {
           return (
             <p key={stockIndex}>
               Percentage: {this.state.pie[stockIndex]["Percentage"]}
@@ -106,7 +106,7 @@ class PieResults extends Component {
               Ticker: {this.state.pie[stockIndex]["Ticker"]}
             </p>
           );
-        })}
+        })} */}
 
         <br />
       </div>

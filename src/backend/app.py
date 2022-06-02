@@ -107,7 +107,7 @@ def makeViz(userID, pieDict):
 
   fig = px.pie(df,values="Percentage", names="Ticker", hover_data=["Sector", "Beta"])
 
-  fig.update_traces(hovertemplate='Ticker: %{label} <br> Percentage: %{value} <br> Sector: %{customdata[0][0]} <br> Beta: %{customdata[0][1]}')
+  fig.update_traces(hovertemplate='Ticker: %{label} <br> Percentage: %{value}% <br> Sector: %{customdata[0][0]} <br> Beta: %{customdata[0][1]}')
 
   chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
   fileName = str(userID) + "-viz"
