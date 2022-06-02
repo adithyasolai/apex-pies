@@ -365,7 +365,8 @@ def chooseStock(sector, targetBeta, raiseBeta, stocksDict):
 # Picks a random stock in the given sector.
 def pickRandomStock(stocksDict, sector):
   sectorStocksList = list(stocksDict[sector].keys())
-  randomStockIndex = random.randint(1, 47)
+  numberOfStocksInSector = len(sectorStocksList)
+  randomStockIndex = random.randint(1, numberOfStocksInSector)
   
   randomStockTickerName = sectorStocksList[randomStockIndex]
   randomStockBeta = stocksDict[sector][randomStockTickerName]
