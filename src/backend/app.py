@@ -7,6 +7,7 @@ import pandas as pd
 import random
 
 import yfinance as yf
+import requests
 
 import firebase_admin
 from firebase_admin import credentials
@@ -243,10 +244,10 @@ def makePie(userAge, userRiskTolerance, userSectorOfInterest, stocksDict):
     for _ in range(numberOfStocksToPick):
       chosenStockTickerName, chosenStockBeta = chooseStock(sector, targetPortfolioBeta, raiseBeta, stocksDict)
 
-      app.logger.info("Fetching YFinance for {ticker} ...".format(ticker=chosenStockTickerName))
-
-      # Fetch other important public information on the first chosen stock
-      # chosenStockCompanyName = fetchYFinanceInfo(chosenStockTickerName)
+      # Fetch other important public information on the chosen stock
+      # app.logger.info("Fetching AlphaVantage for {ticker} ...".format(ticker=chosenStockTickerName))
+      # chosenStockCompanyName = fetchFinancialInfo(chosenStockTickerName)
+      # app.logger.info("Full Company Name of {ticker} is {name} ...".format(ticker=chosenStockTickerName, name=chosenStockCompanyName))
 
       # Add the chosen stock to the portfolio
       pieDict.append({"Ticker" : chosenStockTickerName , 
@@ -264,10 +265,15 @@ def makePie(userAge, userRiskTolerance, userSectorOfInterest, stocksDict):
       
   return pieDict, stocks, betas
 
-def fetchYFinanceInfo(ticker):
-  yfTicker = yf.Ticker(ticker)
-  info_dict = yfTicker.info
-  companyName = info_dict['shortName']
+def fetchFinancialInfo(ticker):
+  ### Yfinance Approach:
+  # yfTicker = yf.Ticker(ticker)
+  # info_dict = yfTicker.info
+  # companyName = info_dict['shortName']
+  url = 'https://www.alphavantage.co/query?function=OVERVIEW&symbol={ticker}&apikey=9K66FLMPJBSMC5N6'.format(ticker=ticker)
+  r = requests.get(url)
+  data = r.json()
+  companyName = data['Name']
 
   return companyName
 
