@@ -9,7 +9,7 @@ import energy_logo from "../resources/sector_icons/energy-sector.jpeg";
 import health_logo from "../resources/sector_icons/health-sector.jpeg";
 import tech_logo from "../resources/sector_icons/tech-sector.jpeg";
 
-const SECTORS = ["Tech", "Health", "Energy", "Banking"];
+const SECTORS = ["Technology", "Health Care", "Energy ", "Banking"];
 const SECTOR_IMAGES = [tech_logo, health_logo, energy_logo, banking_logo];
 const SECTOR_HOVER_INFO = [
   "Tech: These companies have a high beta and volatility. The technology sector is often one of the most attractive growth investments in an economy. Tech stocks have higher betas than the market, hence the presumed risk. If beta is greater than 1.0 then price swings are larger than the market over time. If beta is less than 1.0 then the stock has less risk and offers lower returns. Investors looking to benefit from intraday price changes and short-term momentum strategies usually pick high beta securities.",
@@ -27,7 +27,7 @@ class UserForm extends Component {
     this.state = {
       age: 18, // lowest possible age to invest is 18
       risk: 1, // ranges from 1-10
-      sector: "Tech", // no sector selected at the beginning.
+      sector: "Technology", // no sector selected at the beginning.
       userId: userID, // filled in later and sent to PieResults page to fetch pies from BackEnd
       activeSectorImageIndex: 0, // changes the currently highlighted sector image+dropdown based on what is selected
       loading: false, // facilitates when the "Creating Pie..." screen shows
