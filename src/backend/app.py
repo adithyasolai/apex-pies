@@ -38,60 +38,6 @@ firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://apex-pies-default-rtdb.firebaseio.com'
 })
 
-def publishPieToDB(age, risk, sector, userId):
-  pieDf = makePie(age, risk, sector)
-  app.logger.info("New Pie: \n" + pprint.pformat(pieDf))
-
-  ref = db.reference().child(userId)
-
-  vizLink = makeViz(userId, pieDf)
-  app.logger.info(pprint.pformat("New Viz Link: \n" + vizLink))
-
-  iframe=tls.get_embed(vizLink)
-  app.logger.info(pprint.pformat("New iFrame HTML: \n" + iframe))
-
-  ref.set({
-    'pie': pieDf.to_dict('records'), # 'r' records option stores each row as a dict in an overall array
-    'avgBeta' : pieDf['Beta'].mean(),
-    'vizLink': vizLink,
-    'iframe': iframe
-  })
-
-  app.logger.info("Published data to Firebase DB...")
-
-def makeViz(userID, pieDf):
-  username = 'adithyasolai'
-  api_key = 'TibH1jVTDgFFrOA1bbE6'
-
-  tickers_list = pieDf['Ticker'].tolist()
-  name_list = pieDf['Name'].tolist()
-  sectors_list = pieDf['Sector'].tolist()
-  marketcap_list = pieDf['Market Cap'].round(2).tolist()
-  beta_list = pieDf['Beta'].tolist()
-
-  # Just giving equal % weightage to each slice of the pie
-  vals = [100 / len(pieDf.index)] * len(pieDf.index)
-
-  # This map determines what data is available to be shown in the hovertext of each slice
-  df = pd.DataFrame({"Ticker": tickers_list,
-                     "Name": name_list,
-                     "Percentage": vals, 
-                     "Sector": sectors_list, 
-                     "Market Cap": marketcap_list,
-                     "Beta": beta_list
-                    })
-
-  fig = px.pie(df,values="Percentage", names="Ticker", hover_data=["Name", "Sector", "Market Cap", "Beta"])
-
-  # Configure hovertext for each slice. Omitting Percentage because that is shown on the slice itself.
-  fig.update_traces(hovertemplate=' Ticker: %{label} <br> Name: %{customdata[0][0]} <br> Sector: %{customdata[0][1]} <br> Market Cap: $%{customdata[0][2]} M <br> Beta: %{customdata[0][3]}')
-
-  chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
-  fileName = str(userID) + "-viz"
-  vizLink = py2.plot(fig, filename = fileName, auto_open = False)
-  
-  return vizLink
-
 
 '''
 GET/POST Handlers that get called by front-end.
@@ -140,21 +86,76 @@ def fetchPies():
 
   return jsonify(resultDict)
 
+'''
+Helper methods used by GET/POST Handlers.
+'''
+
+# This function usses the diversification + balance algorithm to create a DataFrame that represents
+# the final Pie Portfolio. Then, this function uses a helper function to plot the pie and publish
+# the plot to the Plotly servers. Finally, this function pubilshes portfolio data and Plotly plot
+# data to the FireBase DB for this user.
+def publishPieToDB(age, risk, sector, userId):
+  pieDf = makePie(age, risk, sector)
+  app.logger.info("New Pie: \n" + pprint.pformat(pieDf))
+
+  vizLink = makeViz(userId, pieDf)
+  app.logger.info(pprint.pformat("New Viz Link: \n" + vizLink))
+
+  # Get the HTML code that enables the front-end to directly embed the Pie Chart from Plotly's servers
+  iframe=tls.get_embed(vizLink)
+  app.logger.info(pprint.pformat("New iFrame HTML: \n" + iframe))
+
+  # Publish Pie portfolio details and Plotly embed details to the Firebase DB for this user
+  ref = db.reference().child(userId)
+  ref.set({
+    'pie': pieDf.to_dict('records'), # 'r' records option stores each row as a dict in an overall array
+    'avgBeta' : pieDf['Beta'].mean(),
+    'vizLink': vizLink,
+    'iframe': iframe
+  })
+
+  app.logger.info("Published data to Firebase DB...")
+
+# Uses the pie portfolio data in pieDf to create a Plotly Pie Chart,
+# and publishes that Pie to Plotly's servers so that it can be fetched by the front-end later.
+def makeViz(userID, pieDf):
+  username = 'adithyasolai'
+  api_key = 'TibH1jVTDgFFrOA1bbE6'
+
+  # Fetch data needed for the Pie plot from `pieDf`
+  tickers_list = pieDf['Ticker'].tolist()
+  name_list = pieDf['Name'].tolist()
+  sectors_list = pieDf['Sector'].tolist()
+  marketcap_list = pieDf['Market Cap'].round(2).tolist()
+  beta_list = pieDf['Beta'].tolist()
+
+  # Just giving equal % weightage to each slice of the pie
+  vals = [100 / len(pieDf.index)] * len(pieDf.index)
+
+  # This map determines what data is available to be shown in the hovertext of each slice
+  df = pd.DataFrame({"Ticker": tickers_list,
+                     "Name": name_list,
+                     "Percentage": vals, 
+                     "Sector": sectors_list, 
+                     "Market Cap": marketcap_list,
+                     "Beta": beta_list
+                    })
+
+  # Determines which data should be shown on the slices itself, the legend on the right, and which data should be used for hovertext
+  fig = px.pie(df, values="Percentage", names="Ticker", hover_data=["Name", "Sector", "Market Cap", "Beta"])
+
+  # Configure hovertext formatting. Omitting Percentage because that is shown on the slice itself.
+  fig.update_traces(hovertemplate=' Ticker: %{label} <br> Name: %{customdata[0][0]} <br> Sector: %{customdata[0][1]} <br> Market Cap: $%{customdata[0][2]} M <br> Beta: %{customdata[0][3]}')
+
+  # Publishes this Pie to the Plotly server
+  chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
+  fileName = str(userID) + "-viz"
+  vizLink = py2.plot(fig, filename = fileName, auto_open = False)
+  
+  return vizLink
 
 '''
-Uncomment the line below to manually allow Debug Mode when 
-starting this Flask server. If uncommented, Debug Mode will
-only be activated if the `python app.py` terminal command is used.
-
-Alternatively, keep this line of code commented and just run the
-`export FLASK_ENV=development` terminal command once before 
-any subsequent `flask run` commands.
-'''
-# app.run(debug=True)
-
-
-'''
-Pie-Making Logic
+Pie-Making Diversification + Beta Balancing Logic
 '''
 
 def makePie(userAge, userRiskTolerance, userSectorOfInterest):
@@ -302,3 +303,15 @@ def pickRandomStock(sector, targetBeta, raiseBeta, stocksDataDf):
 
   # This data is in the form of a pd.Series
   return chosenStockData
+
+
+'''
+Uncomment the line below to manually allow Debug Mode when 
+starting this Flask server. If uncommented, Debug Mode will
+only be activated if the `python app.py` terminal command is used.
+
+Alternatively, keep this line of code commented and just run the
+`export FLASK_ENV=development` terminal command once before 
+any subsequent `flask run` commands.
+'''
+# app.run(debug=True)
