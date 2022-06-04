@@ -70,9 +70,7 @@ def makeViz(userID, pieDf):
   beta_list = pieDf['Beta'].tolist()
 
   # Just giving equal % weightage to each slice of the pie
-  vals = [0.0] * len(tickers_list)
-  for i in range(len(tickers_list)):
-      vals[i] = 100/len(tickers_list)
+  vals = [100 / len(pieDf.index)] * len(pieDf.index)
 
   # This map determines what data is available to be shown in the hovertext of each slice
   df = pd.DataFrame({"Ticker": tickers_list,
