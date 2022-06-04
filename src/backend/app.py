@@ -64,7 +64,9 @@ def makeViz(userID, pieDf):
   api_key = 'TibH1jVTDgFFrOA1bbE6'
 
   tickers_list = pieDf['Ticker'].tolist()
+  name_list = pieDf['Name'].tolist()
   sectors_list = pieDf['Sector'].tolist()
+  marketcap_list = pieDf['Market Cap'].round(2).tolist()
   beta_list = pieDf['Beta'].tolist()
 
   # Just giving equal % weightage to each slice of the pie
@@ -73,15 +75,18 @@ def makeViz(userID, pieDf):
       vals[i] = 100/len(tickers_list)
 
   # This map determines what data is available to be shown in the hovertext of each slice
-  df = pd.DataFrame({"Ticker": tickers_list, 
-                    "Percentage": vals, 
-                    "Sector": sectors_list, 
-                    "Beta": beta_list
+  df = pd.DataFrame({"Ticker": tickers_list,
+                     "Name": name_list,
+                     "Percentage": vals, 
+                     "Sector": sectors_list, 
+                     "Market Cap": marketcap_list,
+                     "Beta": beta_list
                     })
 
-  fig = px.pie(df,values="Percentage", names="Ticker", hover_data=["Sector", "Beta"])
+  fig = px.pie(df,values="Percentage", names="Ticker", hover_data=["Name", "Sector", "Market Cap", "Beta"])
 
-  fig.update_traces(hovertemplate='Ticker: %{label} <br> Percentage: %{value}% <br> Sector: %{customdata[0][0]} <br> Beta: %{customdata[0][1]}')
+  # Configure hovertext for each slice. Omitting Percentage because that is shown on the slice itself.
+  fig.update_traces(hovertemplate=' Ticker: %{label} <br> Name: %{customdata[0][0]} <br> Sector: %{customdata[0][1]} <br> Market Cap: $%{customdata[0][2]} M <br> Beta: %{customdata[0][3]}')
 
   chart_studio.tools.set_credentials_file(username = username, api_key = api_key)
   fileName = str(userID) + "-viz"
