@@ -51,7 +51,7 @@ def publishPieToDB(age, risk, sector, userId):
   app.logger.info(pprint.pformat("New iFrame HTML: \n" + iframe))
 
   ref.set({
-    'pie': pieDf.to_dict(),
+    'pie': pieDf.to_dict('r'), # 'r' records option stores each row as a dict in an overall array
     'avgBeta' : pieDf['Beta'].mean(),
     'vizLink': vizLink,
     'iframe': iframe
