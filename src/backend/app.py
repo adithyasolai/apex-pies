@@ -51,7 +51,7 @@ def publishPieToDB(age, risk, sector, userId):
   app.logger.info(pprint.pformat("New iFrame HTML: \n" + iframe))
 
   ref.set({
-    'pie': pieDf.to_dict('r'), # 'r' records option stores each row as a dict in an overall array
+    'pie': pieDf.to_dict('records'), # 'r' records option stores each row as a dict in an overall array
     'avgBeta' : pieDf['Beta'].mean(),
     'vizLink': vizLink,
     'iframe': iframe
@@ -282,10 +282,6 @@ def pickFirstStock(sector, targetBeta, stocksDataDf):
 # Picks a random stock in the given sector that has a beta higher than targetBeta when raiseBeta is True, 
 # and lower than targetBeta when raiseBeta is False.
 def pickRandomStock(sector, targetBeta, raiseBeta, stocksDataDf):
-  print(sector)
-  print(targetBeta)
-  print(raiseBeta)
-  print()
 
   # Get only the stocks info for the given sector
   selectedSectorStocksDataDf = stocksDataDf.loc[stocksDataDf['Sector'] == sector]
