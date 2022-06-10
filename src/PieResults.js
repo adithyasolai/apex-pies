@@ -65,8 +65,6 @@ class PieResults extends Component {
     console.log(this.state);
     console.log("Number of stocks", numStocks);
 
-    const lineBreak = <br />;
-
     return (
       <div>
         {/* Display fields chosen by user in User Form */}

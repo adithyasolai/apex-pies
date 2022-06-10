@@ -68,6 +68,7 @@ class ResourcesFaq extends Component {
           triggerClassName="collapsible"
           triggerOpenedClassName="collapsible"
         >
+          
           <p className="content">
             {" "}
             The Standard and Poor's 500, or simply the S&P 500, is a stock

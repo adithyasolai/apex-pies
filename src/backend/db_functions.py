@@ -1,6 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+from firebase_admin import auth
 
 '''
 Some utility functions that programmatically impact the Firebase RTDB
@@ -8,20 +9,25 @@ Some utility functions that programmatically impact the Firebase RTDB
 
 #Firebase setup
 # Fetch the service account key JSON file contents
+# Service accounts will always bypass any read/write rules
 cred = credentials.Certificate('../../apex-pies.json')
 
 # Initialize the app with a service account, granting admin privileges
-firebase_admin.initialize_app(cred, {
+app = firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://apex-pies-default-rtdb.firebaseio.com'
 })
 
 def deleteAllUsers():
-  "Deleting all userIds..."
-  ref = db.reference()
+  "Deleting all user data from Authentication..."
+  for authUser in auth.list_users().users:
+    auth.delete_user(authUser.uid)
 
-  for userId in ref.get():
-    childRef = db.reference().child(userId)
-    childRef.delete()
+  "Deleting all user data from Realtime Database..."
+  userRTDBData = db.reference().child("users").get()
+  if userRTDBData is not None:
+    for userId in userRTDBData:
+      childRef = userRTDBData.child(userId)
+      childRef.delete()
 
 def printAllUserIds():
   "Printing all userIds..."

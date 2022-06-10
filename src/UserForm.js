@@ -193,6 +193,7 @@ class UserForm extends Component {
                 // the below should be a button, and not an image. (so that screen-readers can read it, and it will be more accesible.)
                 // eslint-disable-next-line
                 <span
+                  key={SECTOR_IMAGES[i]}
                   className="hovertext_image"
                   data-hover={SECTOR_HOVER_INFO[i]}
                 >
@@ -214,6 +215,12 @@ class UserForm extends Component {
 
           <button className="button glow-button">Submit</button>
         </form>
+
+        <Link to={`/signup`}>
+          <button className="button glow-button">Signup</button>
+        </Link>
+
+        <br />
 
         <Link to={`/resourcesfaq`}>
           <button className="button glow-button">Resources and FAQ</button>
