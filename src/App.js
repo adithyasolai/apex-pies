@@ -15,6 +15,7 @@ import Login from "./Login";
 import Profile from "./Profile";
 import {AuthProvider} from './contexts/AuthContext'
 import apex_logo from "../resources/Apex_Logo_Final.png";
+import PrivateRoute from "./PrivateRoute";
 
 // enables Bootstrap CSS. but conflicts with existing CSS used.
 // import "bootstrap/dist/css/bootstrap.min.css";
@@ -46,9 +47,9 @@ class App extends Component {
               <ResourcesFaq />
             </Route>
 
-            <Route path="/profile">
+            <PrivateRoute path="/profile">
               <Profile />
-            </Route>
+            </PrivateRoute>
 
             <Route path="/signup">
               <Container className="d-flex align-items-center justify-content-center" style={{minHeight: "100vh"}}>

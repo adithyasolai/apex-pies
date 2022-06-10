@@ -62,7 +62,7 @@ export function AuthProvider({children}) {
     // no code is waiting for the return value of this function.
     return unsubscribe
   },
-  []
+  [currentUser]
   )
 
   // `value` contains all the information we want to provide with our authentication.
