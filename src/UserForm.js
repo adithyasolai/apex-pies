@@ -215,6 +215,12 @@ class UserForm extends Component {
 
           <button className="button glow-button">Submit</button>
         </form>
+        
+        <Link to={`/login`}>
+          <button className="button glow-button">Login</button>
+        </Link>
+
+        <br />
 
         <Link to={`/signup`}>
           <button className="button glow-button">Signup</button>

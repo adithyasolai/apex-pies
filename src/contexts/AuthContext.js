@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import {database, auth} from '../firebase'
-import { createUserWithEmailAndPassword  } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 import { ref, set } from "firebase/database";
 
@@ -13,7 +13,7 @@ export function useAuth() {
 
 // creates the context
 export function AuthProvider({children}) {
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState(auth.currentUser);
   const [loading, setLoading] = useState(true);
 
   function signup(email, password) {
@@ -21,14 +21,28 @@ export function AuthProvider({children}) {
     return createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
       console.log("Made account for ", userCredential.user.email)
       const userDataJSON = {email: userCredential.user.email}
+
+      // Initialize this new user in the Firebase RTDB
       try {
+        // TODO: Create a new, protected user in Authentication. Make Firebase rule so that only
+        // that user can write to the DB. Change to that user before this write because
+        // createUserWithEmailAndPassword overwrites the existing user
         set(ref(database, "users/" + userCredential.user.uid), userDataJSON)
         console.log("Initialized Account Info in RTDB for ", userCredential.user.email)
       } catch (e) {
         console.log(e)
       }
-
     });
+  }
+
+  function login(email, password) {
+    return signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+      console.log("Logged into ", userCredential.user.email)
+    });
+  }
+
+  function signout() {
+    return signOut(auth)
   }
 
   // only do this once when the component mounts
@@ -44,6 +58,8 @@ export function AuthProvider({children}) {
 
     console.log("Set currentUser to: ", currentUser)
 
+    // Not really sure why this return is needed, since this is just a side-effect function, and 
+    // no code is waiting for the return value of this function.
     return unsubscribe
   },
   []
@@ -52,7 +68,9 @@ export function AuthProvider({children}) {
   // `value` contains all the information we want to provide with our authentication.
   const value = {
     currentUser,
-    signup
+    signup,
+    login,
+    signout
   }
   
   return (

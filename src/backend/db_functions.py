@@ -23,9 +23,9 @@ def deleteAllUsers():
     auth.delete_user(authUser.uid)
 
   "Deleting all user data from Realtime Database..."
-  userRTDBData = db.reference().child("users").get()
+  userRTDBData = db.reference().child("users")
   if userRTDBData is not None:
-    for userId in userRTDBData:
+    for userId in userRTDBData.get():
       childRef = userRTDBData.child(userId)
       childRef.delete()
 

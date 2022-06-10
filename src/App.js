@@ -1,14 +1,20 @@
+// external imports
 import { Component } from "react";
 import ReactDOM from "react-dom";
 import { StrictMode } from "react";
-import apex_logo from "../resources/Apex_Logo_Final.png";
 import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
+import {Container} from 'react-bootstrap';
+
+
+// imports from this project
 import UserForm from "./UserForm";
 import PieResults from "./PieResults";
 import ResourcesFaq from "./ResourcesFaq";
 import Signup from "./Signup";
-import {Container} from 'react-bootstrap';
+import Login from "./Login";
+import Profile from "./Profile";
 import {AuthProvider} from './contexts/AuthContext'
+import apex_logo from "../resources/Apex_Logo_Final.png";
 
 // enables Bootstrap CSS. but conflicts with existing CSS used.
 // import "bootstrap/dist/css/bootstrap.min.css";
@@ -40,12 +46,23 @@ class App extends Component {
               <ResourcesFaq />
             </Route>
 
+            <Route path="/profile">
+              <Profile />
+            </Route>
+
             <Route path="/signup">
               <Container className="d-flex align-items-center justify-content-center" style={{minHeight: "100vh"}}>
                 <div className='w-100' style={{maxWidth: "400px"}}>
                   <Signup />
                 </div>
-                
+              </Container>
+            </Route>
+
+            <Route path="/login">
+              <Container className="d-flex align-items-center justify-content-center" style={{minHeight: "100vh"}}>
+                <div className='w-100' style={{maxWidth: "400px"}}>
+                  <Login />
+                </div>
               </Container>
             </Route>
 
