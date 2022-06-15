@@ -15,7 +15,6 @@ const Login = () => {
   const {login, currentUser} = useAuth();
   // default is "" so that we don't have an error by default
   const [error, setError] = useState("") 
-  const [loading, setLoading] = useState(false) 
   const history = useHistory();
 
   async function handleSubmit(e) {
@@ -26,7 +25,6 @@ const Login = () => {
     // username/password sign-up is async b/c we are communicating with Firebase DB
     try {
       setError('')
-      setLoading(true)
       await login(emailRef.current.value, passwordRef.current.value)
       // re-direct to user profile after logging in
       history.push("/")
@@ -34,8 +32,6 @@ const Login = () => {
       console.log(e)
       setError("Failed to log in to " + emailRef.current.value)
     }
-
-    setLoading(false)
   }
 
   return (
