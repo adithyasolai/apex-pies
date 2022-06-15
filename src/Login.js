@@ -29,7 +29,7 @@ const Login = () => {
       setLoading(true)
       await login(emailRef.current.value, passwordRef.current.value)
       // re-direct to user profile after logging in
-      history.push("/profile")
+      history.push("/")
     } catch(e) {
       console.log(e)
       setError("Failed to log in to " + emailRef.current.value)

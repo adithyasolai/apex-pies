@@ -67,9 +67,9 @@ class App extends Component {
               </Container>
             </Route>
 
-            <Route exact path="/">
+            <PrivateRoute exact path="/">
               <UserForm />
-            </Route>
+            </PrivateRoute>
           </Switch>
           </AuthProvider>
         </Router>
