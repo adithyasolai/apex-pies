@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail
 } from "firebase/auth";
 
 import { ref, set } from "firebase/database";
@@ -44,6 +45,11 @@ export function AuthProvider({ children }) {
     );
   }
 
+  function resetPassword(email) {
+    return sendPasswordResetEmail(auth, email)
+
+  }
+
   function login(email, password) {
     return signInWithEmailAndPassword(auth, email, password).then(
       (userCredential) => {
@@ -80,6 +86,7 @@ export function AuthProvider({ children }) {
     signup,
     login,
     signout,
+    resetPassword
   };
 
   return (

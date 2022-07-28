@@ -10,6 +10,7 @@ import PrivateRoute from "./PrivateRoute";
 import Profile from "./Profile";
 import ResourcesFaq from "./ResourcesFaq";
 import Signup from "./Signup";
+import ForgotPassword from "./ForgotPassword";
 
 function App() {
   return (
@@ -39,6 +40,10 @@ function App() {
 
               <Route path="/signup">
                 <Signup />
+              </Route>
+
+              <Route path="/forgot-password">
+                <ForgotPassword />
               </Route>
 
               {/* User can't access Profile info until they have logged in. This re-directs them to Login if signed out. */}
