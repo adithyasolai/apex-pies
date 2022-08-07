@@ -46,6 +46,7 @@ export default function Profile() {
       </Card>
 
       <div>
+        {/* TODO - this is ugly - just add CSS */}
         <Button variant="link" onClick={handleSignOut}>
           {" "}
           Sign Out{" "}

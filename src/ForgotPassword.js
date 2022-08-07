@@ -47,7 +47,7 @@ const ForgotPassword = () => {
               <Form.Label>Email</Form.Label>
               <Form.Control type="email" ref={emailRef} required />
             </Form.Group>
-
+            
             <Button type="Submit">
               Send Reset Email
             </Button>

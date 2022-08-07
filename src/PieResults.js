@@ -12,6 +12,8 @@ const PieResults = (props) => {
   const [pie, setPie] = useState();
   const [vizLink, setVizLink] = useState();
   const [username, setUsername] = useState();
+  // TODO - storing api keys as state is insecure
+  // make it an env variable
   const [apiKey, setApiKey] = useState();
   const [iframe, setIframe] = useState();
 
@@ -20,6 +22,8 @@ const PieResults = (props) => {
   useEffect(() => {
     async function fetchPieData() {
       try {
+        // TODO: you can call this without await outside of useEffect and mount once the promise resolves
+        // you can do you this by providing the variable in a dependency array
         // Send request to backend server to fetch the Pie & Plotly information
         // for the current userId. Wait for the request to give a response.
         const response = await fetch("http://127.0.0.1:5000/fetchpies", {

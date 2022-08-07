@@ -13,6 +13,7 @@ const Signup = () => {
   const { signup, currentUser } = useAuth();
   // default is "" so that we don't have an error by default
   const [error, setError] = useState("");
+  // TODO - implement loading
   const [loading, setLoading] = useState(false);
   const history = useHistory();
 
